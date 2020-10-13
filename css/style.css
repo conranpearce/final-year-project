@@ -1,5 +1,5 @@
 body {
-    background-color: #333333;
+    background-color: #fff;
 }
 
 .wrapper {
@@ -18,4 +18,56 @@ h1 {
     font-size: 32px;
     padding: 20px 0;
     text-align: center;
+}
+
+
+h2 {
+    font-weight: 400;
+    font-size: 28px;
+    padding: 20px 0;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+
+nav{
+    margin: 20px 0;
+    padding: 0;
+    
+}
+
+nav li{
+    display: inline-block;
+    list-style-type: none;
+    font-size: 1em;
+    margin: 0 10px;
+    color: #42509e;
+    position: relative;
+    cursor: pointer;
+}
+
+nav li::after{
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 20px;
+    border-bottom: 1px solid #42509e;
+    transition: all ease-in 0.25s;
+}  
+
+nav li:hover:after{
+    width: 100%;
+}
+
+input[type="text"], input[type="password"], input[type="submit"], textarea{
+    -webkit-appearance: none;
+    appearance: none;   
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="submit"]:focus, textarea:focus, a:focus{
+    outline: none;
+}
+
+nav a {
+    color: #111111;
 }
