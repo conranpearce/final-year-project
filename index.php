@@ -72,7 +72,7 @@
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"cameron.backus@gmail.com\",\n \"cloudPassword\": \"jes5&SW2Mq5&qPcvGZba\",\n \"terminalUUID\": \"$uuid4\"\n }\n}",
+            CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"*****\",\n \"cloudPassword\": \"******\",\n \"terminalUUID\": \"$uuid4\"\n }\n}",
             CURLOPT_HTTPHEADER => array(
                 "Content-Type: text/plain"
             ),
