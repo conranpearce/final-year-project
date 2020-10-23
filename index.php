@@ -3,126 +3,62 @@
 ?>
     <section class="index-intro">
 
-        <?php 
-            if (isset($_SESSION["useruid"])) {
-                echo "<p>Hello there " . $_SESSION["useruid"] . "</p>";
-            } 
-        ?>
-
         <h1>This is an introduction</h1>
 
-        <?php
+        <?php 
+            // Global variable
+            $_LOGGED_IN = False;
 
-            // Getting current carbon intensity
-            $curl = curl_init();
+            if (isset($_SESSION["useruid"])) {
+                echo "<p>Hello there " . $_SESSION["useruid"] . "</p>";
 
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://api.carbonintensity.org.uk/intensity/",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "GET",
-            ));
-
-            $response = curl_exec($curl);
-
-            curl_close($curl);
-            // echo $response; // This echo does full carbon intensity response
-
-            $decoded = json_decode($response, true);
-            echo "<h2>" . $decoded['data'][0]['intensity']['index'] . "</h2>";
-
-            // Getting UUID4
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://www.uuidgenerator.net/api/version4",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "GET",
-            ));
-
-            $response = curl_exec($curl);
-
-            $uuid4 = $response;
-
-            curl_close($curl);
+                // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
+                $_LOGGED_IN = True;
+            } 
         
+            // Getting current carbon intensity
+            function getCurrentCarbonIntensity() {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => "https://api.carbonintensity.org.uk/intensity/",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                ));
+
+                $carbonIntensityResponse = curl_exec($curl);
+                curl_close($curl);
+                $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
+                echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
+            }
+
+            // Getting UUID
+            function getUUID() {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => "https://www.uuidgenerator.net/api/version4",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "GET",
+                ));
+
+                $uuid4 = curl_exec($curl);
+                curl_close($curl);
+                return $uuid4;
+            }
+
             // Get token from TP-Link using log in credentials
-
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://wap.tplinkcloud.com",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid4\"\n }\n}",
-                // CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"****\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid4\"\n }\n}",
-                CURLOPT_HTTPHEADER => array(
-                    "Content-Type: text/plain"
-                ),
-            ));
-
-            $response = curl_exec($curl);
-
-            curl_close($curl);
-            // echo $response;
-
-            $decoded = json_decode($response, true);
-
-            $token = $decoded['result']['token'];
-
-            // Get device list using token generated from before
-
-            $curl = curl_init();
-
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => "https://wap.tplinkcloud.com",
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => "",
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => "POST",
-                CURLOPT_POSTFIELDS =>"{\n \"method\": \"getDeviceList\",\n \"params\": {\n \"token\": \"$token\"\n }\n}",
-                CURLOPT_HTTPHEADER => array(
-                    "Content-Type: text/plain"
-                ),
-            ));
-
-            $response = curl_exec($curl);
-
-            curl_close($curl);
-            echo $response;
-
-            $decoded = json_decode($response, true);
-
-            $elementCount = count($decoded['result']['deviceList']);
-
-            $devices = array();
-
-            for ($x = 0; $x < $elementCount; $x++) {
-                echo "<p>" . $decoded['result']['deviceList'][$x]['alias'] . "</p>";
-
-                $deviceName = str_replace(' ', '', strtolower($decoded['result']['deviceList'][$x]['alias']));
-                $deviceID = $decoded['result']['deviceList'][$x]['deviceId'];
-
-                $curl2 = curl_init();
-
-                curl_setopt_array($curl2, array(
+            function getToken($uuid) {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
                     CURLOPT_URL => "https://wap.tplinkcloud.com",
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => "",
@@ -131,43 +67,110 @@
                     CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS =>"{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}",
+                    CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",
+                    // CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",
                     CURLOPT_HTTPHEADER => array(
                         "Content-Type: text/plain"
                     ),
                 ));
 
-                $responseRelayState = curl_exec($curl2);
-
+                $tokenResponse = curl_exec($curl);
                 curl_close($curl);
-
-                $decodedRelayState = json_decode($responseRelayState, true);
-
-                $dataResponse = json_encode($decodedRelayState["result"]["responseData"]);
-
-                // Can't access relay_state value so doing something else
-                if (stripos($dataResponse, 'relay_state\":0') !== false) {
-                    array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
-                    echo "<label class='switch'>
-                            <input type='checkbox' id='" . $deviceName . "' onclick='handleClick(this, this.id);'>
-                            <span class='slider round'></span>
-                        </label>";
-
-                } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
-                    array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
-                    echo "<label class='switch'>
-                            <input type='checkbox' id='" . $deviceName . "'checked onclick='handleClick(this, this.id);'>
-                            <span class='slider round'></span>
-                        </label>";
-                }
-
-                echo "devices array print " . json_decode($devices);
+                $tokenDecoded = json_decode($tokenResponse, true);
+                return $tokenDecoded['result']['token'];
             }
 
-            // convert array into json
-            $devices_json = json_encode($devices);
+            // Get device list using token generated from before
+            function getDeviceList($token) {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => "https://wap.tplinkcloud.com",
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "POST",
+                    CURLOPT_POSTFIELDS =>"{\n \"method\": \"getDeviceList\",\n \"params\": {\n \"token\": \"$token\"\n }\n}",
+                    CURLOPT_HTTPHEADER => array(
+                        "Content-Type: text/plain"
+                    ),
+                ));
 
-            echo $devices_json;
+                $deviceListResponse = curl_exec($curl);
+                curl_close($curl);
+                return json_decode($deviceListResponse, true);
+            }
+            
+            if ($_LOGGED_IN == True) {
+                getCurrentCarbonIntensity();
+                $uuid = getUUID();
+
+                $token = getToken($uuid);
+
+                $deviceListDecoded = getDeviceList($token);
+
+                $deviceCount = count($deviceListDecoded['result']['deviceList']);
+
+                // For all the devices
+                for ($x = 0; $x < $deviceCount; $x++) {
+                    echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
+
+                    $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
+                    $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
+
+                    $curl2 = curl_init();
+                    curl_setopt_array($curl2, array(
+                        CURLOPT_URL => "https://wap.tplinkcloud.com",
+                        CURLOPT_RETURNTRANSFER => true,
+                        CURLOPT_ENCODING => "",
+                        CURLOPT_MAXREDIRS => 10,
+                        CURLOPT_TIMEOUT => 0,
+                        CURLOPT_FOLLOWLOCATION => true,
+                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                        CURLOPT_CUSTOMREQUEST => "POST",
+                        CURLOPT_POSTFIELDS =>"{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}",
+                        CURLOPT_HTTPHEADER => array(
+                            "Content-Type: text/plain"
+                        ),
+                    ));
+
+                    $relayStateResponse = curl_exec($curl2);
+
+                    curl_close($curl);
+
+                    $relayStateDecoded = json_decode($relayStateResponse, true);
+
+                    $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
+
+                    $devices = array();
+
+                    // Setting button for device
+                    // If contains relay_state being 0 in the response
+                    if (stripos($dataResponse, 'relay_state\":0') !== false) {
+                        array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
+                        echo "<label class='switch'>
+                                <input type='checkbox' id='" . $deviceName . "' onclick='handleClick(this, this.id);'>
+                                <span class='slider round'></span>
+                            </label>";
+
+                    } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
+                        array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
+                        echo "<label class='switch'>
+                                <input type='checkbox' id='" . $deviceName . "'checked onclick='handleClick(this, this.id);'>
+                                <span class='slider round'></span>
+                            </label>";
+                    }
+
+                    echo "devices array print " . json_decode($devices);
+                }
+
+                // convert array into json
+                $devices_json = json_encode($devices);
+
+                echo $devices_json;
+            }
         ?>
 
         <!-- Testing calling javascript -->
@@ -208,8 +211,6 @@
 
                 var deviceObj = JSON.parse('<?= $devices_json; ?>');
                 
-                // console.log(deviceObj);
-
                 for (var i = 0; i < deviceObj.length; i++) {
                     console.log("DeviceObj[i] ", deviceObj[i]);
                 }
@@ -249,6 +250,8 @@
 
                         if (deviceObj[i]['userDeviceState'] == 0) {
                             console.log("Now is 1");
+                            // Not sure if I need to set state internally if I shall be calling the API above to get the current state
+                            // Can I call a php method from javascript? - then pass method throughm
                             // deviceObj[i]['userDeviceState'] == 1;
                             var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\"\n }\n}`;
                         } else if (deviceObj[i]['userDeviceState'] == 1) {
