@@ -113,6 +113,8 @@
 
                 $deviceCount = count($deviceListDecoded['result']['deviceList']);
 
+                $devices = array();
+
                 // For all the devices
                 for ($x = 0; $x < $deviceCount; $x++) {
                     echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
@@ -143,8 +145,6 @@
                     $relayStateDecoded = json_decode($relayStateResponse, true);
 
                     $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
-
-                    $devices = array();
 
                     // Setting button for device
                     // If contains relay_state being 0 in the response
