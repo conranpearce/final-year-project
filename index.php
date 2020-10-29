@@ -68,7 +68,7 @@
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => "POST",
                     CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",
-                    // CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",
+                    // CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",      
                     CURLOPT_HTTPHEADER => array(
                         "Content-Type: text/plain"
                     ),
@@ -105,6 +105,7 @@
             
             if ($_LOGGED_IN == True) {
                 getCurrentCarbonIntensity();
+
                 $uuid = getUUID();
 
                 $token = getToken($uuid);
@@ -147,14 +148,12 @@
                     $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
 
                     // Setting button for device
-                    // If contains relay_state being 0 in the response
-                    if (stripos($dataResponse, 'relay_state\":0') !== false) {
+                    if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
                         array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
                         echo "<label class='switch'>
                                 <input type='checkbox' id='" . $deviceName . "' onclick='handleClick(this, this.id);'>
                                 <span class='slider round'></span>
                             </label>";
-
                     } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
                         array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
                         echo "<label class='switch'>
@@ -176,89 +175,66 @@
         <!-- Testing calling javascript -->
         <script>
 
-            async function callAPI() {
+            // Async function getting the current carbon intensity from the national grid API
+            async function getCarbonIntensity() {
                 var requestOptions = {
                     method: 'GET',
                     redirect: 'follow'
                 };
-
                 let response = await fetch("https://api.carbonintensity.org.uk/intensity/", requestOptions);
                 // only proceed once promise is resolved
                 let data = await response.json();
                 // only proceed once second promise is resolved
                 return data;
-
-                // Works for logging
-                // var requestOptions = {
-                    // method: 'GET',
-                    // redirect: 'follow'
-                // };
-
-                // fetch("https://api.carbonintensity.org.uk/intensity/", requestOptions)
-                //     .then(response => response.json())
-                //     .then((result) => {
-                //         console.log(result);
-                //         console.log(result['data'][0]['intensity']['index']);
-                //         return await result;
-                //     })
-                //     .catch(error => console.log('error', error));
             }
 
-            function handleClick(cb, id) {
+            // async function to return the fetch API which retrieves the state (relay_state) of the device selected by the user
+            async function callTplinkAPI(deviceObject) {
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "text/plain");
+                var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObject['userToken']}\",\n \"deviceId\": \"${deviceObject['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n }\n}`;
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+                return (await (await fetch("https://wap.tplinkcloud.com", requestOptions)).json());
+            }
 
+            async function handleClick(cb, id) {
                 console.log(cb.checked);
                 console.log(id);
 
                 var deviceObj = JSON.parse('<?= $devices_json; ?>');
-                
-                for (var i = 0; i < deviceObj.length; i++) {
-                    console.log("DeviceObj[i] ", deviceObj[i]);
-                }
 
                 for (var i = 0; i < deviceObj.length; i++) {
                     if (deviceObj[i]['userDeviceAlias'] == id) {
                         console.log("Selected is ", deviceObj[i]);
 
-                        var myHeaders = new Headers();
-                        myHeaders.append("Content-Type", "text/plain");
+                        let tpLinkReturn = [];
 
-                        // ************************************************************
-                        // NOT PROPERLY WORKING HERE AS NEED TO UPDATE STATE MORE FREQUENTLY
-                        
-                        // Get device current status (RELAY_STATE)
-
-                        var myHeaders = new Headers();
-                        myHeaders.append("Content-Type", "text/plain");
-
-                        var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n }\n}`;
-
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
-
-                        fetch("https://wap.tplinkcloud.com", requestOptions)
-                            .then(response => response.text())
-                            .then(result => console.log(result))
-                            .catch(error => console.log('error', error));
-
-                        // SETTING STATE OF PLUG HERE
-
-                        // Need to get relay state from above to then set below the device status
-
-                        if (deviceObj[i]['userDeviceState'] == 0) {
-                            console.log("Now is 1");
-                            // Not sure if I need to set state internally if I shall be calling the API above to get the current state
-                            // Can I call a php method from javascript? - then pass method throughm
-                            // deviceObj[i]['userDeviceState'] == 1;
-                            var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\"\n }\n}`;
-                        } else if (deviceObj[i]['userDeviceState'] == 1) {
-                            console.log("Now is 0");
-                            // deviceObj[i]['userDeviceState'] == 0;
-                            var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
+                        // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
+                        try {
+                            tpLinkReturn = await callTplinkAPI(deviceObj[i]);
+                        }  catch (e) {
+                            console.log("Error");
+                            console.log(e);
                         }
+
+                        // console.log("tpLinkReturn ", tpLinkReturn);
+                        deviceReturnResponse = tpLinkReturn["result"]["responseData"]
+
+                        if (deviceReturnResponse.includes('relay_state":0')) {
+                            var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":1}}}\"\n }\n}`;
+                            console.log("The device is now on");
+                        } else if (deviceReturnResponse.includes('relay_state":1')) {
+                            var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
+                            console.log("The device is now off");
+                        }
+
+                        var myHeaders = new Headers();
+                        myHeaders.append("Content-Type", "text/plain");
 
                         var requestOptions = {
                             method: 'POST',
@@ -280,9 +256,9 @@
 
         <!-- Calling javascript function above-->
         <script type="text/javascript"> 
-            // console.log(callAPI());
-            callAPI()
-                .then(data => console.log(data))
+            // Printing the result of the current carbon intensity
+            getCarbonIntensity()
+                .then(data => console.log("DATA ", data))
                 .catch(reason => console.log(reason.message))
         </script>
 
