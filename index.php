@@ -120,6 +120,8 @@
                 for ($x = 0; $x < $deviceCount; $x++) {
                     echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
 
+                    // echo "<p>" . json_decode($deviceListDecoded) . "</p>";
+
                     $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
                     $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
 
@@ -145,6 +147,8 @@
 
                     $relayStateDecoded = json_decode($relayStateResponse, true);
 
+                    echo "relayState Decoded " . json_encode($relayStateDecoded);
+
                     $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
 
                     // Setting button for device
@@ -160,14 +164,16 @@
                                 <input type='checkbox' id='" . $deviceName . "'checked onclick='handleClick(this, this.id);'>
                                 <span class='slider round'></span>
                             </label>";
+                    } else if ($relayStateDecoded["msg"] == "Device is offline") {
+                        echo "<p> Device is offline </p>";
+                        echo "<label class='switch'>
+                                <input type='checkbox' id='" . $deviceName . "'disabled='disabled' onclick='handleClick(this, this.id);'>
+                                <span class='slider round'></span>
+                            </label>";
                     }
-
-                    echo "devices array print " . json_decode($devices);
                 }
-
                 // convert array into json
                 $devices_json = json_encode($devices);
-
                 echo $devices_json;
             }
         ?>
