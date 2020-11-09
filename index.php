@@ -83,7 +83,16 @@
                 $deviceListResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                 return json_decode($deviceListResponse, true);
             }
+
+            // Setting the device button on the website based on the device name and if the button is clickable or not
+            function setDeviceButton($deviceName, $checkboxType) {
+                echo "<label class='switch'>
+                    <input type='checkbox' id='" . $deviceName . "' ". $checkboxType ."'>
+                    <span class='slider round'></span>
+                </label>";
+            }
             
+            // If the user is logged in then carry out this code
             if ($_LOGGED_IN == True) {
                 getCurrentCarbonIntensity();
 
@@ -110,25 +119,22 @@
 
                     $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
 
-                    // Setting button for device
+                    // Setting button for device on the website
                     if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
                         array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
-                        echo "<label class='switch'>
-                                <input type='checkbox' id='" . $deviceName . "' onclick='handleClick(this, this.id);'>
-                                <span class='slider round'></span>
-                            </label>";
+                        // Set a clickable button (but not checked already)
+                        $checkboxType = " onclick='handleClick(this, this.id);";
+                        setDeviceButton($deviceName, $checkboxType);
                     } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
                         array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
-                        echo "<label class='switch'>
-                                <input type='checkbox' id='" . $deviceName . "'checked onclick='handleClick(this, this.id);'>
-                                <span class='slider round'></span>
-                            </label>";
+                        // Set a clickable checked button
+                        $checkboxType = " checked onclick='handleClick(this, this.id);";
+                        setDeviceButton($deviceName, $checkboxType);
                     } else if ($relayStateDecoded["msg"] == "Device is offline") {
                         echo "<p> Device is offline </p>";
-                        echo "<label class='switch'>
-                                <input type='checkbox' id='" . $deviceName . "'disabled='disabled' onclick='handleClick(this, this.id);'>
-                                <span class='slider round'></span>
-                            </label>";
+                        // Set a button that is not clickable to indicate the device is offline
+                        $checkboxType = " disabled='disabled' onclick='handleClick(this, this.id);";
+                        setDeviceButton($deviceName, $checkboxType);
                     }
                 }
                 // convert array into json
@@ -139,6 +145,7 @@
 
         <!-- Testing calling javascript -->
         <script>
+
             // Async function getting the current carbon intensity from the national grid API
             async function getCarbonIntensity() {
                 var requestOptions = {
