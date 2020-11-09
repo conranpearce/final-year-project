@@ -15,12 +15,34 @@
                 // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
                 $_LOGGED_IN = True;
             } 
-        
-            // Getting current carbon intensity
-            function getCurrentCarbonIntensity() {
+
+            // Basic template for a POST request
+            function postCurlRequest($url, $postfields) {
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://api.carbonintensity.org.uk/intensity/",
+                    CURLOPT_URL => $url,
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => "",
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => "POST",
+                    CURLOPT_POSTFIELDS => $postfields,
+                    CURLOPT_HTTPHEADER => array(
+                        "Content-Type: text/plain"
+                    ),
+                ));
+                $resp = curl_exec($curl);
+                curl_close($curl);
+                return $resp;
+            }
+
+            // Basic template for a GET request
+            function getCurlRequest($url) {
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => $url,
                     CURLOPT_RETURNTRANSFER => true,
                     CURLOPT_ENCODING => "",
                     CURLOPT_MAXREDIRS => 10,
@@ -29,77 +51,36 @@
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => "GET",
                 ));
-
-                $carbonIntensityResponse = curl_exec($curl);
+                $resp = curl_exec($curl);
                 curl_close($curl);
+                return $resp;
+            }
+        
+            // Getting current carbon intensity
+            function getCurrentCarbonIntensity() {
+                $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/");
                 $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
                 echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
             }
 
             // Getting UUID
             function getUUID() {
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://www.uuidgenerator.net/api/version4",
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "GET",
-                ));
-
-                $uuid4 = curl_exec($curl);
-                curl_close($curl);
+                $uuid4 = getCurlRequest("https://www.uuidgenerator.net/api/version4");
                 return $uuid4;
             }
 
             // Get token from TP-Link using log in credentials
             function getToken($uuid) {
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://wap.tplinkcloud.com",
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",
-                    // CURLOPT_POSTFIELDS =>"{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}",      
-                    CURLOPT_HTTPHEADER => array(
-                        "Content-Type: text/plain"
-                    ),
-                ));
-
-                $tokenResponse = curl_exec($curl);
-                curl_close($curl);
+                $fieldPost = "{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}";
+                $tokenResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                 $tokenDecoded = json_decode($tokenResponse, true);
                 return $tokenDecoded['result']['token'];
             }
 
             // Get device list using token generated from before
             function getDeviceList($token) {
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => "https://wap.tplinkcloud.com",
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "POST",
-                    CURLOPT_POSTFIELDS =>"{\n \"method\": \"getDeviceList\",\n \"params\": {\n \"token\": \"$token\"\n }\n}",
-                    CURLOPT_HTTPHEADER => array(
-                        "Content-Type: text/plain"
-                    ),
-                ));
-
-                $deviceListResponse = curl_exec($curl);
-                curl_close($curl);
+                $fieldPost = "{\n \"method\": \"getDeviceList\",\n \"params\": {\n \"token\": \"$token\"\n }\n}";
+                $deviceListResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                 return json_decode($deviceListResponse, true);
             }
             
@@ -107,13 +88,9 @@
                 getCurrentCarbonIntensity();
 
                 $uuid = getUUID();
-
                 $token = getToken($uuid);
-
                 $deviceListDecoded = getDeviceList($token);
-
                 $deviceCount = count($deviceListDecoded['result']['deviceList']);
-
                 $devices = array();
 
                 // For all the devices
@@ -125,26 +102,8 @@
                     $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
                     $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
 
-                    $curl2 = curl_init();
-                    curl_setopt_array($curl2, array(
-                        CURLOPT_URL => "https://wap.tplinkcloud.com",
-                        CURLOPT_RETURNTRANSFER => true,
-                        CURLOPT_ENCODING => "",
-                        CURLOPT_MAXREDIRS => 10,
-                        CURLOPT_TIMEOUT => 0,
-                        CURLOPT_FOLLOWLOCATION => true,
-                        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                        CURLOPT_CUSTOMREQUEST => "POST",
-                        CURLOPT_POSTFIELDS =>"{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}",
-                        CURLOPT_HTTPHEADER => array(
-                            "Content-Type: text/plain"
-                        ),
-                    ));
-
-                    $relayStateResponse = curl_exec($curl2);
-
-                    curl_close($curl);
-
+                    $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}";
+                    $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                     $relayStateDecoded = json_decode($relayStateResponse, true);
 
                     echo "relayState Decoded " . json_encode($relayStateDecoded);
@@ -180,7 +139,6 @@
 
         <!-- Testing calling javascript -->
         <script>
-
             // Async function getting the current carbon intensity from the national grid API
             async function getCarbonIntensity() {
                 var requestOptions = {
