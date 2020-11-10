@@ -81,6 +81,10 @@
             function getDeviceList($token) {
                 $fieldPost = "{\n \"method\": \"getDeviceList\",\n \"params\": {\n \"token\": \"$token\"\n }\n}";
                 $deviceListResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
+
+                // echo "<p> DEVICE LiST " . $deviceListResponse . " END DEVICE LIST</p>";
+
+
                 return json_decode($deviceListResponse, true);
             }
 
@@ -119,22 +123,46 @@
 
                     $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
 
-                    // Setting button for device on the website
-                    if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
-                        array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
-                        // Set a clickable button (but not checked already)
-                        $checkboxType = " onclick='handleClick(this, this.id);";
-                        setDeviceButton($deviceName, $checkboxType);
-                    } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
-                        array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
-                        // Set a clickable checked button
-                        $checkboxType = " checked onclick='handleClick(this, this.id);";
-                        setDeviceButton($deviceName, $checkboxType);
-                    } else if ($relayStateDecoded["msg"] == "Device is offline") {
-                        echo "<p> Device is offline </p>";
-                        // Set a button that is not clickable to indicate the device is offline
-                        $checkboxType = " disabled='disabled' onclick='handleClick(this, this.id);";
-                        setDeviceButton($deviceName, $checkboxType);
+                    // If a smart plug then add a button
+                    if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTPLUGSWITCH') !== false) {      
+                        echo "<p> Smart plug </p>";
+                        // Setting button for device on the website
+                        if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
+                            // Set a clickable button (but not checked already)
+                            $checkboxType = " onclick='smartPlugClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
+                            // Set a clickable checked button
+                            $checkboxType = " checked onclick='smartPlugClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else if ($relayStateDecoded["msg"] == "Device is offline") {
+                            echo "<p> Device is offline </p>";
+                            // Set a button that is not clickable to indicate the device is offline
+                            $checkboxType = " disabled='disabled' onclick='smartPlugClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        }
+                    } else if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTBULB') !== false) {      
+                        echo "<p> Smart bulb </p>";
+
+                        // Setting button for device on the website
+                        if (stripos($dataResponse, 'on_off\":0') !== false) { // If contains relay_state being 0 in the response
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
+                            // Set a clickable button (but not checked already)
+                            $checkboxType = " onclick='smartBulbClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else if (stripos($dataResponse, 'on_off\":1') !== false) {                    
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
+                            // Set a clickable checked button
+                            $checkboxType = " checked onclick='smartBulbClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else if ($relayStateDecoded["msg"] == "Device is offline") {
+                            echo "<p> Device is offline </p>";
+                            // Set a button that is not clickable to indicate the device is offline
+                            $checkboxType = " disabled='disabled' onclick='smartBulbClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        }
                     }
                 }
                 // convert array into json
@@ -173,7 +201,7 @@
                 return (await (await fetch("https://wap.tplinkcloud.com", requestOptions)).json());
             }
 
-            async function handleClick(cb, id) {
+            async function smartPlugClick(cb, id) {
                 console.log(cb.checked);
                 console.log(id);
 
@@ -201,6 +229,59 @@
                             console.log("The device is now on");
                         } else if (deviceReturnResponse.includes('relay_state":1')) {
                             var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
+                            console.log("The device is now off");
+                        }
+
+                        var myHeaders = new Headers();
+                        myHeaders.append("Content-Type", "text/plain");
+
+                        var requestOptions = {
+                            method: 'POST',
+                            headers: myHeaders,
+                            body: raw,
+                            redirect: 'follow'
+                        };
+
+                        fetch("https://wap.tplinkcloud.com", requestOptions)
+                            .then(response => response.text())
+                            .then(result => console.log(result))
+                            .catch(error => console.log('error', error));
+                    }
+                }
+            }
+
+            async function smartBulbClick(cb, id) {
+                console.log(cb.checked);
+                console.log(id);
+
+                var deviceObj = JSON.parse('<?= $devices_json; ?>');
+
+                for (var i = 0; i < deviceObj.length; i++) {
+                    if (deviceObj[i]['userDeviceAlias'] == id) {
+                        console.log("Selected is ", deviceObj[i]);
+
+                        let tpLinkReturn = [];
+
+                        // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
+                        try {
+                            tpLinkReturn = await callTplinkAPI(deviceObj[i]);
+                        }  catch (e) {
+                            console.log("Error");
+                            console.log(e);
+                        }
+
+                        // console.log("tpLinkReturn ", tpLinkReturn);
+                        deviceReturnResponse = tpLinkReturn["result"]["responseData"]
+
+                        console.log("deviceReturnResponse ", deviceReturnResponse);
+
+                        if (deviceReturnResponse.includes('on_off\":0')) {
+                            console.log("BULB IS OFF");
+                            var raw = `{\n \"method": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"brightness\\\":100,\\\"color_temp\\\":3500,\\\"ignore_default\\\":0,\\\"mode\\\":\\\"normal\\\",\\\"on_off\\\":1,\\\"transition_period\\\":1000}}}\"\n }\n}`;
+                            console.log("The device is now on");
+                        } else if (deviceReturnResponse.includes('on_off\":1')) {
+                            console.log("BULB IS ON");
+                            var raw = `{\n \"method": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"brightness\\\":100,\\\"color_temp\\\":3500,\\\"ignore_default\\\":0,\\\"mode\\\":\\\"normal\\\",\\\"on_off\\\":0,\\\"transition_period\\\":1000}}}\"\n }\n}`;
                             console.log("The device is now off");
                         }
 
