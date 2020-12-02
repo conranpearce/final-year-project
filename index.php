@@ -16,6 +16,40 @@
                 $_LOGGED_IN = True;
             } 
 
+            # Schedule the best time in minutes for the plug to turn on
+            function setSchedule($token, $minutes) {
+
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://wap.tplinkcloud.com',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => $fieldPost,
+                CURLOPT_POSTFIELDS =>'{
+                "method": "passthrough",
+                "params": {
+                "deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC",
+                "token": "3dceff19-BTt5Lw1uHLqgXjXZ8ZGI3NA",
+                "requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,1,1,1,1,1,1],\\"smin\\":1380,\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"
+                }
+                }
+                ',
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: text/plain'
+                ),
+                ));
+
+                $response = curl_exec($curl);
+
+                curl_close($curl);
+                echo $response;
+            }
+
             // Basic template for a POST request
             function postCurlRequest($url, $postfields) {
                 $curl = curl_init();
@@ -63,6 +97,68 @@
                 echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
             }
 
+            // Getting current carbon intensity
+            function getBestCarbonIntensity24hr($token) {
+                $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/2020-12-02T17:35Z/fw24h");
+                $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
+                // echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
+
+                $lowestForecast = 600; # Not sure if this is correct highest value!!!!!!
+
+                echo "<h2>" . "Array size " . sizeof($carbonIntensityDecoded['data']) . "</h2>";
+
+                for ($x = 0; $x < sizeof($carbonIntensityDecoded['data']); $x++) {
+                    if ($carbonIntensityDecoded['data'][$x]['intensity']['forecast'] < $lowestForecast) {
+                        $lowestForecast = $carbonIntensityDecoded['data'][$x]['intensity']['forecast'];
+                    }
+                }
+
+                // return the best time
+                $bestCarbonIntensityTime = "";
+
+                for ($x = 0; $x < sizeof($carbonIntensityDecoded['data']); $x++) {
+                    if ($carbonIntensityDecoded['data'][$x]['intensity']['forecast'] == $lowestForecast) {
+                        $bestCarbonIntensityTime = $carbonIntensityDecoded['data'][$x];
+                    }
+                }
+                echo "<h2>" . "Best forecast time is " . $bestCarbonIntensityTime['from'] . "</h2>";
+
+                # NEED TO THEN CONVERT THIS BEST TIME INTO MINUTES AND ADD TO SCHEDULE
+                # Find out day of the forecast best time
+                # Set repeat to off
+                # Set name
+
+                $time = $bestCarbonIntensityTime['from'];
+
+                $timeExplode = explode(":", $time);
+
+                echo "<h2>" . "Time explode 0: " . $timeExplode[0] . "</h2>";
+                echo "<h2>" . "Time explode 1: " . $timeExplode[1] . "</h2>";
+
+                echo "<h2>" . "Time explode " . $timeExplode[0][sizeof($timeExplode[0]) -1] . "</h2>";
+                echo "<h2>" . "Time explode " . $timeExplode[0][sizeof($timeExplode[0]) -2] . "</h2>";
+                // echo "<h2>" . "Time explode " . $timeExplode[sizeof($timeExplode -1 )] . "</h2>";
+
+                echo "<h2>" . "Time explode 1: " . $timeExplode[1][0] . "</h2>";
+                echo "<h2>" . "Time explode 1: " . $timeExplode[1][1] . "</h2>";
+
+                $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) -1] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
+                $bestMinute = $timeExplode[1][0] +  $timeExplode[1][1];
+
+                echo "<h2>" . "Best hour is:  " . $bestHour . "</h2>";
+                echo "<h2>" . "Best minute is:  " . $bestMinute . "</h2>";
+
+                $bestTimeInMinutes = ($bestHour * 60) + $bestMinute;
+
+                echo "<h2>" . "Best time in minutes is:  " . $bestTimeInMinutes . "</h2>";
+
+                setSchedule($token, $bestTimeInMinutes);
+
+
+
+
+            }
+
             // Getting UUID
             function getUUID() {
                 $uuid4 = getCurlRequest("https://www.uuidgenerator.net/api/version4");
@@ -83,8 +179,6 @@
                 $deviceListResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
 
                 // echo "<p> DEVICE LiST " . $deviceListResponse . " END DEVICE LIST</p>";
-
-
                 return json_decode($deviceListResponse, true);
             }
 
@@ -164,6 +258,9 @@
                             setDeviceButton($deviceName, $checkboxType);
                         }
                     }
+
+                    # Get carbon intensity
+                    getBestCarbonIntensity24hr($token);
                 }
                 // convert array into json
                 $devices_json = json_encode($devices);
