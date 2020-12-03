@@ -16,8 +16,81 @@
                 $_LOGGED_IN = True;
             } 
 
+            # Return the weekday (as an array) to set the schedule to
+            function setDaySchedule($day, $token, $minutes) {
+
+                $dateBestDay = explode("T", $day);
+
+                echo "<h2>" . "Best day date is " . $dateBestDay[0] . "</h2>";
+
+
+                $timestamp = strtotime($dateBestDay[0]);
+                $dayFormatted = date('w', $timestamp);
+
+                echo "<h2>" . "Day 0-6: " . $dayFormatted . "</h2>";
+
+                // $weekArr = [0,0,0,0,0,0,0];
+
+                # Sunday
+                if ($dayFormatted == 0) {
+                    // $weekArr[0] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                }
+                # Monday
+                else if ($dayFormatted == 1){
+                    // $weekArr[1] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,1,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                }
+                # Tuesday
+                else if ($dayFormatted == 2){
+                    // $weekArr[2] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,1,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                }
+                # Wednesday
+                else if ($dayFormatted == 3){
+                    // $weekArr[3] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,1,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                }
+                # Thursday
+                else if ($dayFormatted == 4){
+                    // $weekArr[4] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,1,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                }
+                # Friday
+                else if ($dayFormatted == 5) {
+                    // $weekArr[5] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,1,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                }
+                # Saturday
+                else if ($dayFormatted == 6) {
+                    // $weekArr[6] = 1;
+                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,0,1],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+
+                }
+            
+                return $fieldPost;
+            }
+
             # Schedule the best time in minutes for the plug to turn on
-            function setSchedule($token, $minutes) {
+            function setSchedule($token, $minutes, $bestDay) {
+
+                # Pass the best day to set which day to set the schedule on to
+                $fieldPost = setDaySchedule($bestDay, $token, $minutes);
+
+
+                
+                # Set week day and no repeat
+                # Get the date and check which day it is
+                # set wday equal to 1 on the day to turn on
+                # repeat 0
+
+                # get current date, if date is different then means the next day
+
+
+                # Pass in variable correctly
+
+                // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":1380,\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
 
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
@@ -30,15 +103,15 @@
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $fieldPost,
-                CURLOPT_POSTFIELDS =>'{
-                "method": "passthrough",
-                "params": {
-                "deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC",
-                "token": "3dceff19-BTt5Lw1uHLqgXjXZ8ZGI3NA",
-                "requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,1,1,1,1,1,1],\\"smin\\":1380,\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"
-                }
-                }
-                ',
+                // CURLOPT_POSTFIELDS =>'{
+                // "method": "passthrough",
+                // "params": {
+                // "deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC",
+                // "token": "3dceff19-BT8mPTHfX4no2Skne3cGzPN",
+                // "requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":1380,\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"
+                // }
+                // }
+                // ',
                 CURLOPT_HTTPHEADER => array(
                     'Content-Type: text/plain'
                 ),
@@ -99,13 +172,20 @@
 
             // Getting current carbon intensity
             function getBestCarbonIntensity24hr($token) {
-                $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/2020-12-02T17:35Z/fw24h");
+
+                $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
+
+                echo "<h2>" . "Current date and time forecast for API is " . $currentDateTime . "</h2>";
+
+
+                $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/". $currentDateTime. "/fw24h");
+                // $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/2020-12-02T17:35Z/fw24h");
                 $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
                 // echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
 
                 $lowestForecast = 600; # Not sure if this is correct highest value!!!!!!
 
-                echo "<h2>" . "Array size " . sizeof($carbonIntensityDecoded['data']) . "</h2>";
+                // echo "<h2>" . "Array size " . sizeof($carbonIntensityDecoded['data']) . "</h2>";
 
                 for ($x = 0; $x < sizeof($carbonIntensityDecoded['data']); $x++) {
                     if ($carbonIntensityDecoded['data'][$x]['intensity']['forecast'] < $lowestForecast) {
@@ -122,6 +202,7 @@
                     }
                 }
                 echo "<h2>" . "Best forecast time is " . $bestCarbonIntensityTime['from'] . "</h2>";
+                echo "<h2>" . "Best forecast index is " . $bestCarbonIntensityTime['intensity']['forecast'] . "</h2>";
 
                 # NEED TO THEN CONVERT THIS BEST TIME INTO MINUTES AND ADD TO SCHEDULE
                 # Find out day of the forecast best time
@@ -129,20 +210,14 @@
                 # Set name
 
                 $time = $bestCarbonIntensityTime['from'];
+                
 
                 $timeExplode = explode(":", $time);
 
-                echo "<h2>" . "Time explode 0: " . $timeExplode[0] . "</h2>";
-                echo "<h2>" . "Time explode 1: " . $timeExplode[1] . "</h2>";
+                # Check best hour logic here!!!!!!!
+                // echo "<h2>" . "timeExplode[0][sizeof(timeExplode[0]):   " . $timeExplode[0][sizeof($timeExplode[0]) - 3] . "</h2>";
 
-                echo "<h2>" . "Time explode " . $timeExplode[0][sizeof($timeExplode[0]) -1] . "</h2>";
-                echo "<h2>" . "Time explode " . $timeExplode[0][sizeof($timeExplode[0]) -2] . "</h2>";
-                // echo "<h2>" . "Time explode " . $timeExplode[sizeof($timeExplode -1 )] . "</h2>";
-
-                echo "<h2>" . "Time explode 1: " . $timeExplode[1][0] . "</h2>";
-                echo "<h2>" . "Time explode 1: " . $timeExplode[1][1] . "</h2>";
-
-                $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) -1] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
+                $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) - 3] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
                 $bestMinute = $timeExplode[1][0] +  $timeExplode[1][1];
 
                 echo "<h2>" . "Best hour is:  " . $bestHour . "</h2>";
@@ -152,7 +227,9 @@
 
                 echo "<h2>" . "Best time in minutes is:  " . $bestTimeInMinutes . "</h2>";
 
-                setSchedule($token, $bestTimeInMinutes);
+                
+
+                setSchedule($token, $bestTimeInMinutes, $bestCarbonIntensityTime['from']);
 
 
 
