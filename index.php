@@ -18,18 +18,10 @@
 
             # Return the weekday (as an array) to set the schedule to
             function setDaySchedule($day, $token, $minutes) {
-
+                # The TP-Link API sets the day on the schedule to turn on, find the correct day within the next 24 hours to turn the smart device on
                 $dateBestDay = explode("T", $day);
-
-                echo "<h2>" . "Best day date is " . $dateBestDay[0] . "</h2>";
-
-
                 $timestamp = strtotime($dateBestDay[0]);
                 $dayFormatted = date('w', $timestamp);
-
-                echo "<h2>" . "Day 0-6: " . $dayFormatted . "</h2>";
-
-                // $weekArr = [0,0,0,0,0,0,0];
 
                 # Sunday
                 if ($dayFormatted == 0) {
@@ -67,7 +59,7 @@
                     $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,0,1],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
 
                 }
-            
+                # Return the field post to then be set in the API
                 return $fieldPost;
             }
 
@@ -76,21 +68,6 @@
 
                 # Pass the best day to set which day to set the schedule on to
                 $fieldPost = setDaySchedule($bestDay, $token, $minutes);
-
-
-                
-                # Set week day and no repeat
-                # Get the date and check which day it is
-                # set wday equal to 1 on the day to turn on
-                # repeat 0
-
-                # get current date, if date is different then means the next day
-
-
-                # Pass in variable correctly
-
-                // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":1380,\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
 
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
@@ -103,22 +80,11 @@
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => $fieldPost,
-                // CURLOPT_POSTFIELDS =>'{
-                // "method": "passthrough",
-                // "params": {
-                // "deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC",
-                // "token": "3dceff19-BT8mPTHfX4no2Skne3cGzPN",
-                // "requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":1380,\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"
-                // }
-                // }
-                // ',
                 CURLOPT_HTTPHEADER => array(
                     'Content-Type: text/plain'
                 ),
                 ));
-
                 $response = curl_exec($curl);
-
                 curl_close($curl);
                 echo $response;
             }
@@ -170,70 +136,46 @@
                 echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
             }
 
-            // Getting current carbon intensity
+            // Getting the best carbon intensity period of time (lowest index) in the next 24 hours
             function getBestCarbonIntensity24hr($token) {
-
+                # Get the current time and date to pass into the national grid API
                 $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
 
                 echo "<h2>" . "Current date and time forecast for API is " . $currentDateTime . "</h2>";
 
-
+                # Return the forecast for the next 24 hours from the current time
                 $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/". $currentDateTime. "/fw24h");
-                // $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/2020-12-02T17:35Z/fw24h");
                 $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
-                // echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
 
+                # Set a variable for the maximum value of carbon intensity index
                 $lowestForecast = 600; # Not sure if this is correct highest value!!!!!!
-
-                // echo "<h2>" . "Array size " . sizeof($carbonIntensityDecoded['data']) . "</h2>";
-
+                # Loop through and find the lowest forecasted index
                 for ($x = 0; $x < sizeof($carbonIntensityDecoded['data']); $x++) {
                     if ($carbonIntensityDecoded['data'][$x]['intensity']['forecast'] < $lowestForecast) {
                         $lowestForecast = $carbonIntensityDecoded['data'][$x]['intensity']['forecast'];
                     }
                 }
 
-                // return the best time
+                # Find the best time by checking for the lowest forecast
                 $bestCarbonIntensityTime = "";
-
                 for ($x = 0; $x < sizeof($carbonIntensityDecoded['data']); $x++) {
                     if ($carbonIntensityDecoded['data'][$x]['intensity']['forecast'] == $lowestForecast) {
                         $bestCarbonIntensityTime = $carbonIntensityDecoded['data'][$x];
                     }
                 }
+
+                # Output to the user the lowest time and forecast
                 echo "<h2>" . "Best forecast time is " . $bestCarbonIntensityTime['from'] . "</h2>";
                 echo "<h2>" . "Best forecast index is " . $bestCarbonIntensityTime['intensity']['forecast'] . "</h2>";
 
-                # NEED TO THEN CONVERT THIS BEST TIME INTO MINUTES AND ADD TO SCHEDULE
-                # Find out day of the forecast best time
-                # Set repeat to off
-                # Set name
-
+                # Get the hour and minutes of the best time
                 $time = $bestCarbonIntensityTime['from'];
-                
-
                 $timeExplode = explode(":", $time);
-
-                # Check best hour logic here!!!!!!!
-                // echo "<h2>" . "timeExplode[0][sizeof(timeExplode[0]):   " . $timeExplode[0][sizeof($timeExplode[0]) - 3] . "</h2>";
-
                 $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) - 3] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
-                $bestMinute = $timeExplode[1][0] +  $timeExplode[1][1];
-
-                echo "<h2>" . "Best hour is:  " . $bestHour . "</h2>";
-                echo "<h2>" . "Best minute is:  " . $bestMinute . "</h2>";
-
+                $bestMinute = ($timeExplode[1][0] * 10) +  $timeExplode[1][1];
                 $bestTimeInMinutes = ($bestHour * 60) + $bestMinute;
-
-                echo "<h2>" . "Best time in minutes is:  " . $bestTimeInMinutes . "</h2>";
-
-                
-
+                # Pass the best time in hour and minutes to then be set using the TP-Link API
                 setSchedule($token, $bestTimeInMinutes, $bestCarbonIntensityTime['from']);
-
-
-
-
             }
 
             // Getting UUID
@@ -254,7 +196,6 @@
             function getDeviceList($token) {
                 $fieldPost = "{\n \"method\": \"getDeviceList\",\n \"params\": {\n \"token\": \"$token\"\n }\n}";
                 $deviceListResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
-
                 // echo "<p> DEVICE LiST " . $deviceListResponse . " END DEVICE LIST</p>";
                 return json_decode($deviceListResponse, true);
             }
@@ -335,13 +276,13 @@
                             setDeviceButton($deviceName, $checkboxType);
                         }
                     }
-
-                    # Get carbon intensity
-                    getBestCarbonIntensity24hr($token);
                 }
                 // convert array into json
                 $devices_json = json_encode($devices);
                 echo $devices_json;
+
+                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
+                getBestCarbonIntensity24hr($token);
             }
         ?>
 
