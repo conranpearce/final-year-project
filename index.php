@@ -29,6 +29,13 @@
                 echo "error";
             }
 
+            // Update the information displayed every 30 minutes, relating to the update of the carbon intensity API
+            if ($_GET["act"]=='update'){
+                echo "success";
+            } else {
+                echo "error";
+            }
+
             # Return the weekday (as an array) to set the schedule to
             function setDaySchedule($day, $token, $minutes) {
                 # The TP-Link API sets the day on the schedule to turn on, find the correct day within the next 24 hours to turn the smart device on
@@ -189,7 +196,7 @@
 
                 # Output to the user the lowest time and forecast
                 echo "<h2>" . "Best forecast time is " . $bestCarbonIntensityTime['from'] . "</h2>";
-                echo "<h2>" . "Best forecast index is " . $bestCarbonIntensityTime['intensity']['forecast'] . "</h2>";
+                echo "<h2>" . "Best forecast index is " . $bestCarbonIntensityTime['intensity']['forecast'] . " CO2/KwH" . "</h2>";
 
                 # Get the hour and minutes of the best time
                 $time = $bestCarbonIntensityTime['from'];
@@ -235,6 +242,10 @@
             if ($_LOGGED_IN == True) {
                 getCurrentCarbonIntensity();
                 getCurrentGenerationMix();
+
+                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
+                getBestCarbonIntensity24hr($token);
+
 
                 $uuid = getUUID();
                 $token = getToken($uuid);
@@ -305,8 +316,6 @@
                 $devices_json = json_encode($devices);
                 echo $devices_json;
 
-                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
-                getBestCarbonIntensity24hr($token);
             }
         ?>
 
@@ -317,20 +326,38 @@
             window.onload = function() {
                 // Check if a user is logged in
                 if (<?php echo $_LOGGED_IN ?> == 1) {
-                    inactivity();        
+                    inactivity();  
+                    // Refresh the page every 30 minutes
+                    updateAPIs();
                 }
             }
             
+            // Update the calls to the APIs every 30 minutes
+            var updateAPIs = setInterval(function () {
+                $.ajax({
+                    url: "http://localhost:8888/login-system/index.php?act=update", // Pass the logout argument to index.php
+                    success: function(data) {
+                        window.location.href = "index.php";
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(xhr.responseText);
+                        console.log(error);
+                        console.log(status);
+                        console.log(xhr);
+                    }
+                });
+            }, 1800 * 1000); // Update every 30 minutes
+
             // Check if the user is not carrying out any of these DOM events
             var inactivity = function () {
                 var time;
-                window.onload = resetTimer;
-                window.onmousemove = resetTimer;
-                window.onkeypress = resetTimer;
-                window.ontouchstart = resetTimer; 
-                window.onclick = resetTimer;      
-                window.onkeydown = resetTimer;   
-                window.addEventListener('scroll', resetTimer, true);
+                window.onload = resetInactivity;
+                window.onmousemove = resetInactivity;
+                window.onkeypress = resetInactivity;
+                window.ontouchstart = resetInactivity; 
+                window.onclick = resetInactivity;      
+                window.onkeydown = resetInactivity;   
+                window.addEventListener('scroll', resetInactivity, true);
 
                 // Log the user out if there are no DOM events, using AJAX
                 function logout() {
@@ -348,7 +375,7 @@
                     });
                 }
                 // Set a 5 minute timer to check for DOM events (inactivity)
-                function resetTimer() {
+                function resetInactivity() {
                     clearTimeout(time);
                     time = setTimeout(logout, 300000)
                 }
