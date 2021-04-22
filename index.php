@@ -43,6 +43,8 @@
                 $bestTime = strtotime($dateBestDay[0]);
                 $dayFormatted = date('w', $bestTime);
 
+                echo "<p>token 3 ". $token . "</p>";
+
                 # Sunday
                 if ($dayFormatted == 0) {
                     // $weekArr[0] = 1;
@@ -86,8 +88,17 @@
             # Schedule the best time in minutes for the plug to turn on
             function setSchedule($token, $minutes, $bestDay) {
 
+                echo "<h2>Set schedule</h2>";
+
+                echo "<p>token 2 ". $token . "</p>";
+
                 # Pass the best day to set which day to set the schedule on to
                 $fieldPost = setDaySchedule($bestDay, $token, $minutes);
+
+
+                // TOKEN NOT PASSED INTO
+
+                echo "<p>Field post ". $fieldPost . "</p>";
 
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
@@ -205,6 +216,10 @@
                 $bestMinute = ($timeExplode[1][0] * 10) +  $timeExplode[1][1];
                 $bestTimeInMinutes = ($bestHour * 60) + $bestMinute;
                 # Pass the best time in hour and minutes to then be set using the TP-Link API
+
+                echo "<p>token 1 ". $token . "</p>";
+
+
                 setSchedule($token, $bestTimeInMinutes, $bestCarbonIntensityTime['from']);
             }
 
@@ -240,18 +255,24 @@
             
             // If the user is logged in then carry out this code
             if ($_LOGGED_IN == True) {
-                getCurrentCarbonIntensity();
-                getCurrentGenerationMix();
-
-                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
-                getBestCarbonIntensity24hr($token);
-
 
                 $uuid = getUUID();
                 $token = getToken($uuid);
                 $deviceListDecoded = getDeviceList($token);
                 $deviceCount = count($deviceListDecoded['result']['deviceList']);
                 $devices = array();
+                
+                getCurrentCarbonIntensity();
+                getCurrentGenerationMix();
+                
+                echo "<p>token  ". $token . "</p>";
+
+
+                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
+                getBestCarbonIntensity24hr($token);
+
+
+                
 
                 // For all the devices
                 for ($x = 0; $x < $deviceCount; $x++) {
