@@ -14,7 +14,6 @@
 
                 // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
                 $_LOGGED_IN = True;
-                echo "<p>start time " . $_SESSION['start_time'] . "</p>";
             } 
 
             // Check if the argument logout is passed from JavaScript via AJAX 
@@ -85,18 +84,18 @@
 
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://wap.tplinkcloud.com',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_ENCODING => '',
-                CURLOPT_MAXREDIRS => 10,
-                CURLOPT_TIMEOUT => 0,
-                CURLOPT_FOLLOWLOCATION => true,
-                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $fieldPost,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: text/plain'
-                ),
+                    CURLOPT_URL => 'https://wap.tplinkcloud.com',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => $fieldPost,
+                    CURLOPT_HTTPHEADER => array(
+                        'Content-Type: text/plain'
+                    ),
                 ));
                 $response = curl_exec($curl);
                 curl_close($curl);
@@ -148,6 +147,16 @@
                 $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/");
                 $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
                 echo "<h2>" . "Current carbon intensity is: " . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
+            }
+
+            // Getting current generation mix
+            function getCurrentGenerationMix() {
+                $generationMixResponse = getCurlRequest("https://api.carbonintensity.org.uk/generation/");
+                $generationMixDecoded = json_decode($generationMixResponse, true);
+                echo "<h2>" . "Current generation mix of energy is:" . "</h2>";
+                for ($x = 0; $x < sizeof($generationMixDecoded['data']['generationmix']); $x++) {
+                    echo "<h2>" . $generationMixDecoded['data']['generationmix'][$x]['fuel'] . " " . $generationMixDecoded['data']['generationmix'][$x]['perc'] . "%" . "</h2>";
+                }
             }
 
             // Getting the best carbon intensity period of time (lowest index) in the next 24 hours
@@ -225,6 +234,7 @@
             // If the user is logged in then carry out this code
             if ($_LOGGED_IN == True) {
                 getCurrentCarbonIntensity();
+                getCurrentGenerationMix();
 
                 $uuid = getUUID();
                 $token = getToken($uuid);
