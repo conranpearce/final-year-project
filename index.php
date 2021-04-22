@@ -14,14 +14,28 @@
 
                 // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
                 $_LOGGED_IN = True;
+                echo "<p>start time " . $_SESSION['start_time'] . "</p>";
             } 
+
+            // Check if the argument logout is passed from JavaScript via AJAX 
+            if ($_GET["argument"]=='logout'){
+                $_LOGGED_IN = False;
+                session_start();
+                session_unset();
+                session_destroy();
+                header("location: index.php");
+                exit();
+                echo "success";
+            } else {
+                echo "error";
+            }
 
             # Return the weekday (as an array) to set the schedule to
             function setDaySchedule($day, $token, $minutes) {
                 # The TP-Link API sets the day on the schedule to turn on, find the correct day within the next 24 hours to turn the smart device on
                 $dateBestDay = explode("T", $day);
-                $timestamp = strtotime($dateBestDay[0]);
-                $dayFormatted = date('w', $timestamp);
+                $bestTime = strtotime($dateBestDay[0]);
+                $dayFormatted = date('w', $bestTime);
 
                 # Sunday
                 if ($dayFormatted == 0) {
@@ -186,7 +200,7 @@
 
             // Get token from TP-Link using log in credentials
             function getToken($uuid) {
-                $fieldPost = "{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"***\",\n \"cloudPassword\": \"***\",\n \"terminalUUID\": \"$uuid\"\n }\n}";
+                $fieldPost = "{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"conranpearce@hotmail.com\",\n \"cloudPassword\": \"CamerasAreWatching111!\",\n \"terminalUUID\": \"$uuid\"\n }\n}";
                 $tokenResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                 $tokenDecoded = json_decode($tokenResponse, true);
                 return $tokenDecoded['result']['token'];
@@ -231,7 +245,7 @@
                     $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                     $relayStateDecoded = json_decode($relayStateResponse, true);
 
-                    echo "relayState Decoded " . json_encode($relayStateDecoded);
+                    // echo "relayState Decoded " . json_encode($relayStateDecoded);
 
                     $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
 
@@ -288,6 +302,47 @@
 
         <!-- Testing calling javascript -->
         <script>
+            
+            // When the page loads, check for inactivity
+            window.onload = function() {
+                // Check if a user is logged in
+                if (<?php echo $_LOGGED_IN ?> == 1) {
+                    inactivity();        
+                }
+            }
+            
+            // Check if the user is not carrying out any of these DOM events
+            var inactivity = function () {
+                var time;
+                window.onload = resetTimer;
+                window.onmousemove = resetTimer;
+                window.onkeypress = resetTimer;
+                window.ontouchstart = resetTimer; 
+                window.onclick = resetTimer;      
+                window.onkeydown = resetTimer;   
+                window.addEventListener('scroll', resetTimer, true);
+
+                // Log the user out if there are no DOM events, using AJAX
+                function logout() {
+                    $.ajax({
+                        url: "http://localhost:8888/login-system/index.php?argument=logout", // Pass the logout argument to index.php
+                        success: function(data) {
+                            window.location.href = "login.php"; // Redirect the user to the login page if there is inactivity
+                        },
+                        error: function(xhr, status, error) {
+                            console.log(xhr.responseText);
+                            console.log(error);
+                            console.log(status);
+                            console.log(xhr);
+                        }
+                    });
+                }
+                // Set a 5 minute timer to check for DOM events (inactivity)
+                function resetTimer() {
+                    clearTimeout(time);
+                    time = setTimeout(logout, 300000)
+                }
+            };
 
             // Async function getting the current carbon intensity from the national grid API
             async function getCarbonIntensity() {
@@ -430,8 +485,6 @@
         </script>
 
     </section>
-
-<script src="js/checkbox.js"></script>
 
 <?php
     include_once 'footer.php';
