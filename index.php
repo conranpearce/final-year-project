@@ -36,88 +36,22 @@
                 echo "error";
             }
 
-            # Return the weekday (as an array) to set the schedule to
-            function setDaySchedule($day, $token, $minutes) {
-                # The TP-Link API sets the day on the schedule to turn on, find the correct day within the next 24 hours to turn the smart device on
-                $dateBestDay = explode("T", $day);
-                $bestTime = strtotime($dateBestDay[0]);
-                $dayFormatted = date('w', $bestTime);
-
-                echo "<p>token 3 ". $token . "</p>";
-
-                # Sunday
-                if ($dayFormatted == 0) {
-                    // $weekArr[0] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                }
-                # Monday
-                else if ($dayFormatted == 1){
-                    // $weekArr[1] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,1,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                }
-                # Tuesday
-                else if ($dayFormatted == 2){
-                    // $weekArr[2] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,1,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                }
-                # Wednesday
-                else if ($dayFormatted == 3){
-                    // $weekArr[3] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,1,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                }
-                # Thursday
-                else if ($dayFormatted == 4){
-                    // $weekArr[4] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,1,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                }
-                # Friday
-                else if ($dayFormatted == 5) {
-                    // $weekArr[5] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,1,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                }
-                # Saturday
-                else if ($dayFormatted == 6) {
-                    // $weekArr[6] = 1;
-                    $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,0,1],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-
-                }
-                # Return the field post to then be set in the API
-                return $fieldPost;
-            }
-
-            # Schedule the best time in minutes for the plug to turn on
-            function setSchedule($token, $minutes, $bestDay) {
-
-                echo "<h2>Set schedule</h2>";
-
-                echo "<p>token 2 ". $token . "</p>";
-
-                # Pass the best day to set which day to set the schedule on to
-                $fieldPost = setDaySchedule($bestDay, $token, $minutes);
-
-
-                // TOKEN NOT PASSED INTO
-
-                echo "<p>Field post ". $fieldPost . "</p>";
-
+            // Basic template for a GET request
+            function getCurlRequest($url) {
                 $curl = curl_init();
                 curl_setopt_array($curl, array(
-                    CURLOPT_URL => 'https://wap.tplinkcloud.com',
+                    CURLOPT_URL => $url,
                     CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => '',
+                    CURLOPT_ENCODING => "",
                     CURLOPT_MAXREDIRS => 10,
                     CURLOPT_TIMEOUT => 0,
                     CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => 'POST',
-                    CURLOPT_POSTFIELDS => $fieldPost,
-                    CURLOPT_HTTPHEADER => array(
-                        'Content-Type: text/plain'
-                    ),
+                    CURLOPT_CUSTOMREQUEST => "GET",
                 ));
-                $response = curl_exec($curl);
+                $resp = curl_exec($curl);
                 curl_close($curl);
-                echo $response;
+                return $resp;
             }
 
             // Basic template for a POST request
@@ -142,24 +76,20 @@
                 return $resp;
             }
 
-            // Basic template for a GET request
-            function getCurlRequest($url) {
-                $curl = curl_init();
-                curl_setopt_array($curl, array(
-                    CURLOPT_URL => $url,
-                    CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_ENCODING => "",
-                    CURLOPT_MAXREDIRS => 10,
-                    CURLOPT_TIMEOUT => 0,
-                    CURLOPT_FOLLOWLOCATION => true,
-                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-                    CURLOPT_CUSTOMREQUEST => "GET",
-                ));
-                $resp = curl_exec($curl);
-                curl_close($curl);
-                return $resp;
+            // Getting UUID
+            function getUUID() {
+                $uuid4 = getCurlRequest("https://www.uuidgenerator.net/api/version4");
+                return $uuid4;
             }
-        
+
+            // Get token from TP-Link using log in credentials
+            function getToken($uuid) {
+                $fieldPost = "{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"conranpearce@hotmail.com\",\n \"cloudPassword\": \"CamerasAreWatching111!\",\n \"terminalUUID\": \"$uuid\"\n }\n}";
+                $tokenResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
+                $tokenDecoded = json_decode($tokenResponse, true);
+                return $tokenDecoded['result']['token'];
+            }
+
             // Getting current carbon intensity
             function getCurrentCarbonIntensity() {
                 $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/");
@@ -178,11 +108,7 @@
             }
 
             // Getting the best carbon intensity period of time (lowest index) in the next 24 hours
-            function getBestCarbonIntensity24hr($token) {
-                # Get the current time and date to pass into the national grid API
-                $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
-
-                echo "<h2>" . "Current date and time forecast for API is " . $currentDateTime . "</h2>";
+            function getBestCarbonIntensity24hr($token, $currentDateTime) {
 
                 # Return the forecast for the next 24 hours from the current time
                 $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/". $currentDateTime. "/fw24h");
@@ -209,32 +135,17 @@
                 echo "<h2>" . "Best forecast time is " . $bestCarbonIntensityTime['from'] . "</h2>";
                 echo "<h2>" . "Best forecast index is " . $bestCarbonIntensityTime['intensity']['forecast'] . " CO2/KwH" . "</h2>";
 
-                # Get the hour and minutes of the best time
-                $time = $bestCarbonIntensityTime['from'];
-                $timeExplode = explode(":", $time);
-                $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) - 3] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
-                $bestMinute = ($timeExplode[1][0] * 10) +  $timeExplode[1][1];
-                $bestTimeInMinutes = ($bestHour * 60) + $bestMinute;
-                # Pass the best time in hour and minutes to then be set using the TP-Link API
+                return $bestCarbonIntensityTime['from'];
 
-                echo "<p>token 1 ". $token . "</p>";
+                // # Get the hour and minutes of the best time
+                // $time = $bestCarbonIntensityTime['from'];
+                // $timeExplode = explode(":", $time);
+                // $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) - 3] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
+                // $bestMinute = ($timeExplode[1][0] * 10) +  $timeExplode[1][1];
+                // $bestTimeInMinutes = ($bestHour * 60) + $bestMinute;
+                // # Pass the best time in hour and minutes to then be set using the TP-Link API
 
-
-                setSchedule($token, $bestTimeInMinutes, $bestCarbonIntensityTime['from']);
-            }
-
-            // Getting UUID
-            function getUUID() {
-                $uuid4 = getCurlRequest("https://www.uuidgenerator.net/api/version4");
-                return $uuid4;
-            }
-
-            // Get token from TP-Link using log in credentials
-            function getToken($uuid) {
-                $fieldPost = "{\n \"method\": \"login\",\n \"params\": {\n \"appType\": \"Kasa_Android\",\n \"cloudUserName\": \"conranpearce@hotmail.com\",\n \"cloudPassword\": \"CamerasAreWatching111!\",\n \"terminalUUID\": \"$uuid\"\n }\n}";
-                $tokenResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
-                $tokenDecoded = json_decode($tokenResponse, true);
-                return $tokenDecoded['result']['token'];
+                // setSchedule($token, $bestTimeInMinutes, $bestCarbonIntensityTime['from']);
             }
 
             // Get device list using token generated from before
@@ -253,26 +164,8 @@
                 </label>";
             }
             
-            // If the user is logged in then carry out this code
-            if ($_LOGGED_IN == True) {
-
-                $uuid = getUUID();
-                $token = getToken($uuid);
-                $deviceListDecoded = getDeviceList($token);
-                $deviceCount = count($deviceListDecoded['result']['deviceList']);
-                $devices = array();
-                
-                getCurrentCarbonIntensity();
-                getCurrentGenerationMix();
-                
-                echo "<p>token  ". $token . "</p>";
-
-
-                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
-                getBestCarbonIntensity24hr($token);
-
-
-                
+            function setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices) {
+                echo "<h2>Turn on/off:</h2>";
 
                 // For all the devices
                 for ($x = 0; $x < $deviceCount; $x++) {
@@ -333,10 +226,287 @@
                         }
                     }
                 }
-                // convert array into json
-                $devices_json = json_encode($devices);
-                echo $devices_json;
 
+                // convert array into json
+                $devices_encoded = json_encode($devices);
+                return $devices_encoded;
+            }
+
+            function setScheduleButtons($token, $deviceListDecoded, $deviceCount, $devices) {
+                echo "<h2>Schedule on/off:</h2>";
+
+                // For all the devices
+                for ($x = 0; $x < $deviceCount; $x++) {
+                    echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
+
+                    // echo "<p>" . json_decode($deviceListDecoded) . "</p>";
+
+                    $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
+                    $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
+
+                    $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}";
+                    $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
+                    $relayStateDecoded = json_decode($relayStateResponse, true);
+
+                    // echo "relayState Decoded " . json_encode($relayStateDecoded);
+
+                    $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
+
+                    // If a smart plug then add a button
+                    if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTPLUGSWITCH') !== false) {      
+                        echo "<p> Smart plug </p>";
+                        // Setting button for device on the website
+                        if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
+                            // Set a clickable button (but not checked already)
+                            $checkboxType = " onclick='smartPlugScheduleClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
+                            // Set a clickable checked button
+                            $checkboxType = " checked onclick='smartPlugScheduleClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else if ($relayStateDecoded["msg"] == "Device is offline") {
+                            echo "<p> Device is offline </p>";
+                            // Set a button that is not clickable to indicate the device is offline
+                            $checkboxType = " disabled='disabled' onclick='smartPlugScheduleClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        }
+                    }
+                }
+                // convert array into json
+                $devices_encoded = json_encode($devices);
+                return $devices_encoded;
+            }
+
+
+            # Return the weekday (as an array) to set the schedule to
+            function setDaySchedule($day, $token, $minutes) {
+                # The TP-Link API sets the day on the schedule to turn on, find the correct day within the next 24 hours to turn the smart device on
+                $dateBestDay = explode("T", $day);
+                $bestTime = strtotime($dateBestDay[0]);
+                $dayFormatted = date('w', $bestTime);
+
+                # Sunday
+                if ($dayFormatted == 0) {
+                    // $weekArr[0] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[1,0,0,0,0,0,0]";
+                }
+                # Monday
+                else if ($dayFormatted == 1){
+                    // $weekArr[1] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,1,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[0,1,0,0,0,0,0]";
+                }
+                # Tuesday
+                else if ($dayFormatted == 2){
+                    // $weekArr[2] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,1,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[0,0,1,0,0,0,0]";
+
+                }
+                # Wednesday
+                else if ($dayFormatted == 3){
+                    // $weekArr[3] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,1,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[0,0,0,1,0,0,0]";
+                }
+                # Thursday
+                else if ($dayFormatted == 4){
+                    // $weekArr[4] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,1,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[0,0,0,0,1,0,0]";
+                }
+                # Friday
+                else if ($dayFormatted == 5) {
+                    // $weekArr[5] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,1,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[0,0,0,0,0,1,0]";
+                }
+                # Saturday
+                else if ($dayFormatted == 6) {
+                    // $weekArr[6] = 1;
+
+                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,0,1],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                    $bestDayFormatted = "[0,0,0,0,0,0,1]";
+                }
+                # Return the field post to then be set in the API
+                // return $fieldPost;
+                return $bestDayFormatted;
+            }
+
+            function setMinutes($token, $bestDay) {
+                # Get the hour and minutes of the best time
+                $time = $bestDay;
+                $timeExplode = explode(":", $time);
+                $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) - 3] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
+                $bestMinute = ($timeExplode[1][0] * 10) +  $timeExplode[1][1];
+                $minutes = ($bestHour * 60) + $bestMinute;
+
+                return $minutes;
+            }
+
+            # Schedule the best time in minutes for the plug to turn on
+            function setSchedule($token, $minutes, $bestDay) {
+
+                echo "<p> best day " . $bestDay . " </p>";
+
+                # Pass the best day to set which day to set the schedule on to
+                // $fieldPost = setDaySchedule($bestDay, $token, $minutes);
+
+                // TOKEN NOT PASSED INTO
+
+                echo "<p>Field post ". $fieldPost . "</p>";
+
+                $curl = curl_init();
+                curl_setopt_array($curl, array(
+                    CURLOPT_URL => 'https://wap.tplinkcloud.com',
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_ENCODING => '',
+                    CURLOPT_MAXREDIRS => 10,
+                    CURLOPT_TIMEOUT => 0,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_CUSTOMREQUEST => 'POST',
+                    CURLOPT_POSTFIELDS => $fieldPost,
+                    CURLOPT_HTTPHEADER => array(
+                        'Content-Type: text/plain'
+                    ),
+                ));
+                $response = curl_exec($curl);
+                curl_close($curl);
+                echo $response;
+            }
+
+
+            // # Return the weekday (as an array) to set the schedule to
+            // function setDaySchedule($day, $token, $minutes) {
+            //     # The TP-Link API sets the day on the schedule to turn on, find the correct day within the next 24 hours to turn the smart device on
+            //     $dateBestDay = explode("T", $day);
+            //     $bestTime = strtotime($dateBestDay[0]);
+            //     $dayFormatted = date('w', $bestTime);
+
+            //     # Sunday
+            //     if ($dayFormatted == 0) {
+            //         // $weekArr[0] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+            //     }
+            //     # Monday
+            //     else if ($dayFormatted == 1){
+            //         // $weekArr[1] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,1,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+            //     }
+            //     # Tuesday
+            //     else if ($dayFormatted == 2){
+            //         // $weekArr[2] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,1,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+            //     }
+            //     # Wednesday
+            //     else if ($dayFormatted == 3){
+            //         // $weekArr[3] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,1,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+            //     }
+            //     # Thursday
+            //     else if ($dayFormatted == 4){
+            //         // $weekArr[4] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,1,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+            //     }
+            //     # Friday
+            //     else if ($dayFormatted == 5) {
+            //         // $weekArr[5] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,1,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+            //     }
+            //     # Saturday
+            //     else if ($dayFormatted == 6) {
+            //         // $weekArr[6] = 1;
+            //         $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,0,1],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+
+            //     }
+            //     # Return the field post to then be set in the API
+            //     return $fieldPost;
+            // }
+
+            // # Schedule the best time in minutes for the plug to turn on
+            // function setSchedule($token, $bestDay) {
+
+            //     # Get the hour and minutes of the best time
+            //     $time = $bestDay;
+            //     $timeExplode = explode(":", $time);
+            //     $bestHour = ($timeExplode[0][sizeof($timeExplode[0]) - 3] * 10) +  $timeExplode[0][sizeof($timeExplode[0]) -2];
+            //     $bestMinute = ($timeExplode[1][0] * 10) +  $timeExplode[1][1];
+            //     $minutes = ($bestHour * 60) + $bestMinute;
+            //     // # Pass the best time in hour and minutes to then be set using the TP-Link API
+            //     // setSchedule($token, $bestTimeInMinutes, $bestCarbonIntensityTime['from']);
+
+            //     # Pass the best day to set which day to set the schedule on to
+            //     $fieldPost = setDaySchedule($bestDay, $token, $minutes);
+
+            //     // TOKEN NOT PASSED INTO
+
+            //     echo "<p>Field post ". $fieldPost . "</p>";
+
+            //     $curl = curl_init();
+            //     curl_setopt_array($curl, array(
+            //         CURLOPT_URL => 'https://wap.tplinkcloud.com',
+            //         CURLOPT_RETURNTRANSFER => true,
+            //         CURLOPT_ENCODING => '',
+            //         CURLOPT_MAXREDIRS => 10,
+            //         CURLOPT_TIMEOUT => 0,
+            //         CURLOPT_FOLLOWLOCATION => true,
+            //         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            //         CURLOPT_CUSTOMREQUEST => 'POST',
+            //         CURLOPT_POSTFIELDS => $fieldPost,
+            //         CURLOPT_HTTPHEADER => array(
+            //             'Content-Type: text/plain'
+            //         ),
+            //     ));
+            //     $response = curl_exec($curl);
+            //     curl_close($curl);
+            //     echo $response;
+            // }
+
+            
+
+            // If the user is logged in then carry out this code
+            if ($_LOGGED_IN == True) {
+
+                # Get the current time and date to pass into the national grid API
+                $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
+
+                echo "<h2>" . "Current date and time forecast for API is " . $currentDateTime . "</h2>";
+
+                $uuid = getUUID();
+                $token = getToken($uuid);
+
+                getCurrentCarbonIntensity();
+                getCurrentGenerationMix();
+
+                # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
+                $bestDay = getBestCarbonIntensity24hr($token, $currentDateTime);
+
+                $deviceListDecoded = getDeviceList($token);
+                $deviceCount = count($deviceListDecoded['result']['deviceList']);
+                $devices = array();
+                
+                // Set the devices_json available for the JS to interact with
+                $devices_json = setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices);
+
+                $schedule_devices_json = setScheduleButtons($token, $deviceListDecoded, $deviceCount, $devices);
+
+                $minutes = setMinutes($token, $bestDay);
+
+                $bestDayFormatted = setDaySchedule($bestDay, $token, $minutes);
+
+                // Set schedule
+                setSchedule($token, $minutes, $bestDay);
+                
             }
         ?>
 
@@ -484,6 +654,8 @@
 
                 var deviceObj = JSON.parse('<?= $devices_json; ?>');
 
+                console.log("device object ", deviceObj);
+
                 for (var i = 0; i < deviceObj.length; i++) {
                     if (deviceObj[i]['userDeviceAlias'] == id) {
                         console.log("Selected is ", deviceObj[i]);
@@ -511,6 +683,69 @@
                             console.log("BULB IS ON");
                             var raw = `{\n \"method": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"brightness\\\":100,\\\"color_temp\\\":3500,\\\"ignore_default\\\":0,\\\"mode\\\":\\\"normal\\\",\\\"on_off\\\":0,\\\"transition_period\\\":1000}}}\"\n }\n}`;
                             console.log("The device is now off");
+                        }
+
+                        var myHeaders = new Headers();
+                        myHeaders.append("Content-Type", "text/plain");
+
+                        var requestOptions = {
+                            method: 'POST',
+                            headers: myHeaders,
+                            body: raw,
+                            redirect: 'follow'
+                        };
+
+                        fetch("https://wap.tplinkcloud.com", requestOptions)
+                            .then(response => response.text())
+                            .then(result => console.log(result))
+                            .catch(error => console.log('error', error));
+                    }
+                }
+            }
+
+            async function smartPlugScheduleClick(cb, id) {
+
+                // console.log("token ", '<?= $token; ?>');
+                // console.log("minutes ", '<?= $minutes; ?>');
+                // console.log("best day formatted ", '<?= $bestDayFormatted; ?>');
+
+                var token = '<?= $token; ?>';
+                var minutes = '<?= $minutes; ?>';
+                var bestDayFormatted = '<?= $bestDayFormatted; ?>';
+
+                console.log("token ", token);
+                console.log("minutes ", minutes);
+                console.log("best day formatted ", bestDayFormatted);
+
+                console.log(cb.checked);
+                console.log(id);
+
+                var deviceObj = JSON.parse('<?= $devices_json; ?>');
+
+                for (var i = 0; i < deviceObj.length; i++) {
+                    if (deviceObj[i]['userDeviceAlias'] == id) {
+                        console.log("Selected is ", deviceObj[i]);
+
+                        let tpLinkReturn = [];
+
+                        // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
+                        try {
+                            tpLinkReturn = await callTplinkAPI(deviceObj[i]);
+                        }  catch (e) {
+                            console.log("Error");
+                            console.log(e);
+                        }
+
+                        // console.log("tpLinkReturn ", tpLinkReturn);
+                        deviceReturnResponse = tpLinkReturn["result"]["responseData"]
+
+                        if (deviceReturnResponse.includes('relay_state":0')) {                            
+                            var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":' + bestDayFormatted + ',\\"smin\\":' + minutes + ',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+
+                            console.log("The device is now scheduled");
+                        } else if (deviceReturnResponse.includes('relay_state":1')) {
+                            var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
+                            console.log("The device is not scheduled");
                         }
 
                         var myHeaders = new Headers();
