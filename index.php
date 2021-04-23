@@ -799,18 +799,13 @@
                         // console.log("tpLinkReturn ", tpLinkReturn);
                         deviceReturnResponseSchedule = tpLinkReturnSchedule["result"]["responseData"];
 
-                        if (deviceReturnResponseSchedule.includes('rule_list\":[]')) {        
+                        if (deviceReturnResponseSchedule.includes('rule_list\":[]')) { // no schedule 
                         // } else if (stripos($relayStateResponse, 'rule_list\":[]') !== false) { // no schedule 
                     
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":' + bestDayFormatted + ',\\"smin\\":' + minutes + ',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-
                             console.log("The device is now scheduled");
                         } else {
-                        // } else if (deviceReturnResponse.includes('relay_state":1')) {
-                            // var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
-                            var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{"schedule":{"delete_all_rules":null, "erase_runtime_stat\\":null}}}"}}';
-                            // var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"delete_all_rules\\":null, \\"erase_runtime_stat\\":null}}}"';
-
+                            var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"delete_all_rules\\":null, \\"erase_runtime_stat\\":null}}}"}}';
                             console.log("The device is not scheduled");
                         }
 
