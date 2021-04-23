@@ -46,6 +46,7 @@
                 echo "<h2>" . "Current date and time forecast for API is " . $currentDateTime . "</h2>";
 
                 $uuid = getUUID();
+
                 $token = getToken($uuid);
 
                 getCurrentCarbonIntensity();

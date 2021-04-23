@@ -13,8 +13,16 @@
             CURLOPT_CUSTOMREQUEST => "GET",
         ));
         $resp = curl_exec($curl);
+        if (curl_errno($curl)) { // If an error then set message.
+            $error_message = curl_error($curl);
+        }
         curl_close($curl);
-        return $resp;
+        // If an error then return error message.
+        if (isset($error_message)) {
+            echo "<p>Error with request.</p>";
+        } else {
+            return $resp;
+        }
     }
 
     // Basic template for a POST request
@@ -35,7 +43,14 @@
             ),
         ));
         $resp = curl_exec($curl);
+        if (curl_errno($curl)) {
+            $error_message = curl_error($curl);
+        }
         curl_close($curl);
-        return $resp;
+        if (isset($error_message)) {
+            echo "<p>Error with request. 2 "  . $postfields . "</p>";
+        } else {
+            return $resp;
+        }
     }
 ?>
