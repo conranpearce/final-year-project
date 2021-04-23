@@ -1,8 +1,11 @@
 <?php
     // Getting UUID to be used for getting the TP-Link token
     function getUUID() {
-        $uuid4 = getCurlRequest("https://www.uuidgenerator.net/api/version4");
-        return $uuid4;
+        $uuid = getCurlRequest("https://www.uuidtools.com/api/generate/v1/");
+        $uuid = trim($uuid, '[');
+        $uuid = trim($uuid, ']');
+        $uuid = trim($uuid, '"');
+        return $uuid;
     }
 
     // Get the current carbon intensity from the National Grid API
