@@ -176,6 +176,7 @@
                     $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
                     $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
 
+                    // Finding state of the buttons
                     $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}";
                     $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                     $relayStateDecoded = json_decode($relayStateResponse, true);
@@ -235,6 +236,10 @@
             function setScheduleButtons($token, $deviceListDecoded, $deviceCount, $devices) {
                 echo "<h2>Schedule on/off:</h2>";
 
+
+                // Restructure for all plugs
+                // then loop through device list for finding if scheduled
+
                 // For all the devices
                 for ($x = 0; $x < $deviceCount; $x++) {
                     echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
@@ -244,6 +249,7 @@
                     $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
                     $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
 
+                    // Find the state of the buttons (if scheduled)
                     $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}";
                     $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
                     $relayStateDecoded = json_decode($relayStateResponse, true);
@@ -255,23 +261,64 @@
                     // If a smart plug then add a button
                     if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTPLUGSWITCH') !== false) {      
                         echo "<p> Smart plug </p>";
-                        // Setting button for device on the website
-                        if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
-                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
-                            // Set a clickable button (but not checked already)
-                            $checkboxType = " onclick='smartPlugScheduleClick(this, this.id);";
-                            setDeviceButton($deviceName, $checkboxType);
-                        } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
-                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
-                            // Set a clickable checked button
-                            $checkboxType = " checked onclick='smartPlugScheduleClick(this, this.id);";
-                            setDeviceButton($deviceName, $checkboxType);
-                        } else if ($relayStateDecoded["msg"] == "Device is offline") {
+
+
+                        // find if scheduled 
+                        $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"schedule\\\":{\\\"get_rules\\\":null}}\"\n\n }\n}";
+                        // $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}";
+                        // {
+                        //     "method": "passthrough",
+                        //     "params": {
+                        //     "deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC",
+                        //      "token": "3dceff19-BT05CmUt7Ir09LjEdwVKLwQ",
+                        //    "requestData": "{\"schedule\":{\"get_rules\":null}}"
+                        //     }
+                        //    }
+                           
+                        $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
+
+                        echo "<p> relay state response " . $relayStateResponse . "</p>";
+
+                        if ($relayStateDecoded["msg"] == "Device is offline") {
                             echo "<p> Device is offline </p>";
                             // Set a button that is not clickable to indicate the device is offline
                             $checkboxType = " disabled='disabled' onclick='smartPlugScheduleClick(this, this.id);";
                             setDeviceButton($deviceName, $checkboxType);
+                        } else if (stripos($relayStateResponse, 'rule_list\":[]') !== false) { // no schedule 
+                            echo "<p> No schedule </p>";
+
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
+                            // Set a clickable button (but not checked already)
+                            $checkboxType = " onclick='smartPlugScheduleClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
+                        } else {
+                            echo "<p>  scheduled </p>";
+
+                            array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
+                            // Set a clickable checked button
+                            $checkboxType = " checked onclick='smartPlugScheduleClick(this, this.id);";
+                            setDeviceButton($deviceName, $checkboxType);
                         }
+
+
+
+                        // // Setting button for device on the website
+                        // if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
+                        //     array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
+                        //     // Set a clickable button (but not checked already)
+                        //     $checkboxType = " onclick='smartPlugScheduleClick(this, this.id);";
+                        //     setDeviceButton($deviceName, $checkboxType);
+                        // } else if (stripos($dataResponse, 'relay_state\":1') !== false) {                    
+                        //     array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
+                        //     // Set a clickable checked button
+                        //     $checkboxType = " checked onclick='smartPlugScheduleClick(this, this.id);";
+                        //     setDeviceButton($deviceName, $checkboxType);
+                        // } else if ($relayStateDecoded["msg"] == "Device is offline") {
+                        //     echo "<p> Device is offline </p>";
+                        //     // Set a button that is not clickable to indicate the device is offline
+                        //     $checkboxType = " disabled='disabled' onclick='smartPlugScheduleClick(this, this.id);";
+                        //     setDeviceButton($deviceName, $checkboxType);
+                        // }
                     }
                 }
                 // convert array into json
@@ -289,56 +336,33 @@
 
                 # Sunday
                 if ($dayFormatted == 0) {
-                    // $weekArr[0] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[1,0,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[1,0,0,0,0,0,0]";
                 }
                 # Monday
                 else if ($dayFormatted == 1){
-                    // $weekArr[1] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,1,0,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[0,1,0,0,0,0,0]";
                 }
                 # Tuesday
                 else if ($dayFormatted == 2){
-                    // $weekArr[2] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,1,0,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[0,0,1,0,0,0,0]";
-
                 }
                 # Wednesday
                 else if ($dayFormatted == 3){
-                    // $weekArr[3] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,1,0,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[0,0,0,1,0,0,0]";
                 }
                 # Thursday
                 else if ($dayFormatted == 4){
-                    // $weekArr[4] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,1,0,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[0,0,0,0,1,0,0]";
                 }
                 # Friday
                 else if ($dayFormatted == 5) {
-                    // $weekArr[5] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,1,0],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[0,0,0,0,0,1,0]";
                 }
                 # Saturday
                 else if ($dayFormatted == 6) {
-                    // $weekArr[6] = 1;
-
-                    // $fieldPost = '{"method": "passthrough","params": {"deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC","token": "'.$token.'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":[0,0,0,0,0,0,1],\\"smin\\":'.$minutes.',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
                     $bestDayFormatted = "[0,0,0,0,0,0,1]";
                 }
-                # Return the field post to then be set in the API
-                // return $fieldPost;
+
                 return $bestDayFormatted;
             }
 
@@ -599,6 +623,27 @@
                 return (await (await fetch("https://wap.tplinkcloud.com", requestOptions)).json());
             }
 
+            // async function to return the fetch API which retrieves the state (relay_state) of the device selected by the user
+            async function callTplinkAPIScheduled(deviceObject) {
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "text/plain");
+                // var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObject['userToken']}\",\n \"deviceId\": \"${deviceObject['userDeviceId']}\",\n \"requestData\": \"{\\\"schedule\\\":{\\\"get_rules\\\":null}}\n}`;
+                
+                
+                // var raw = `{"method\": "passthrough", "params": {"token":"` + deviceObject['userToken'] + `\",\n \"deviceId\": \"` + deviceObject['userDeviceId'] + `","requestData": "{"schedule":{"get_rules":null}}"}}`;
+                // var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObject['userToken']}\",\n \"deviceId\": \"${deviceObject['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n }\n}`;
+                var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObject['userToken']}\",\n \"deviceId\": \"${deviceObject['userDeviceId']}\",\n \"requestData\": \"{\\\"schedule\\\":{\\\"get_rules\\\":null}}"\n}\n}`;
+
+                // var raw = `{"method": "passthrough", "params": { "deviceId": "800675856DF78F73B410C3FB4DF41B8B1D01F6DC", "token": "3dceff19-BTInK8jscDehOhYpIXGrbZg", "requestData": "{\"schedule\":{\"get_rules\":null}}"}}`;
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+                return (await (await fetch("https://wap.tplinkcloud.com", requestOptions)).json());
+            }
+
             async function smartPlugClick(cb, id) {
                 console.log(cb.checked);
                 console.log(id);
@@ -664,16 +709,17 @@
 
                         // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
                         try {
-                            tpLinkReturn = await callTplinkAPI(deviceObj[i]);
+                            tpLinkReturn = await callTplink(deviceObj[i]);
                         }  catch (e) {
                             console.log("Error");
                             console.log(e);
                         }
 
                         // console.log("tpLinkReturn ", tpLinkReturn);
-                        deviceReturnResponse = tpLinkReturn["result"]["responseData"]
+                        deviceReturnResponse = tpLinkReturn["result"]["responseData"];
 
                         console.log("deviceReturnResponse ", deviceReturnResponse);
+
 
                         if (deviceReturnResponse.includes('on_off\":0')) {
                             console.log("BULB IS OFF");
@@ -737,14 +783,34 @@
                         }
 
                         // console.log("tpLinkReturn ", tpLinkReturn);
-                        deviceReturnResponse = tpLinkReturn["result"]["responseData"]
+                        deviceReturnResponse = tpLinkReturn["result"]["responseData"];
 
-                        if (deviceReturnResponse.includes('relay_state":0')) {                            
+
+                        // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
+                        try {
+                            tpLinkReturnSchedule = await callTplinkAPIScheduled(deviceObj[i]);
+                        }  catch (e) {
+                            console.log("Error");
+                            console.log(e);
+                        }
+
+                        console.log("tpLinkReturnSchedule ", tpLinkReturnSchedule);
+
+                        // console.log("tpLinkReturn ", tpLinkReturn);
+                        deviceReturnResponseSchedule = tpLinkReturnSchedule["result"]["responseData"];
+
+                        if (deviceReturnResponseSchedule.includes('rule_list\":[]')) {        
+                        // } else if (stripos($relayStateResponse, 'rule_list\":[]') !== false) { // no schedule 
+                    
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":' + bestDayFormatted + ',\\"smin\\":' + minutes + ',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
 
                             console.log("The device is now scheduled");
-                        } else if (deviceReturnResponse.includes('relay_state":1')) {
-                            var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
+                        } else {
+                        // } else if (deviceReturnResponse.includes('relay_state":1')) {
+                            // var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
+                            var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{"schedule":{"delete_all_rules":null, "erase_runtime_stat\\":null}}}"}}';
+                            // var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"delete_all_rules\\":null, \\"erase_runtime_stat\\":null}}}"';
+
                             console.log("The device is not scheduled");
                         }
 
