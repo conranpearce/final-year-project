@@ -19,10 +19,21 @@
     function getCurrentGenerationMix() {
         $generationMixResponse = getCurlRequest("https://api.carbonintensity.org.uk/generation/");
         $generationMixDecoded = json_decode($generationMixResponse, true);
-        # Display all of the generation percentages
+        # Display all of the generation sources in descending order of percentage
+        $generationPerc = array();
         echo "<h2>" . "Current generation mix of energy is:" . "</h2>";
         for ($x = 0; $x < sizeof($generationMixDecoded['data']['generationmix']); $x++) {
-            echo "<h2>" . $generationMixDecoded['data']['generationmix'][$x]['fuel'] . " " . $generationMixDecoded['data']['generationmix'][$x]['perc'] . "%" . "</h2>";
+            array_push($generationPerc, $generationMixDecoded['data']['generationmix'][$x]['perc']);
+        }
+        rsort($generationPerc);
+        $generationMix = array();
+        for ($x = 0; $x < sizeof($generationPerc); $x++) {
+            for ($y = 0; $y < sizeof($generationPerc); $y++) {
+                if ($generationPerc[$x] == $generationMixDecoded['data']['generationmix'][$y]['perc']) {
+                    array_push($generationMix, ['fuel' => $generationMixDecoded['data']['generationmix'][$y]['fuel'], 'perc' => $generationMixDecoded['data']['generationmix'][$y]['perc']]);
+                }
+            }
+            echo "<h2> " . $generationMix[$x]['fuel'] . " " . $generationMix[$x]['perc'] . "% </h2>";
         }
     }
 

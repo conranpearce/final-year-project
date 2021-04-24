@@ -37,6 +37,26 @@ nav{
     
 }
 
+nav li {
+    background-color: #ccc;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 4px 8px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+    margin: 2px 2px;
+    cursor: pointer;
+    /* display: block; */
+}
+
+nav a {
+    color: #111111;
+    text-decoration: none;
+}
+/* 
 nav li{
     display: inline-block;
     list-style-type: none;
@@ -55,11 +75,13 @@ nav li::after{
     width: 20px;
     border-bottom: 1px solid #42509e;
     transition: all ease-in 0.25s;
-}  
+}  */
 
-nav li:hover:after{
-    width: 100%;
-}
+nav li:hover{
+    background-color: rgb(189, 189, 189);
+    -webkit-transition: .4s;
+    transition: .4s;
+} 
 
 input[type="text"], input[type="password"], input[type="submit"], textarea{
     -webkit-appearance: none;
@@ -67,10 +89,6 @@ input[type="text"], input[type="password"], input[type="submit"], textarea{
 }
 input[type="text"]:focus, input[type="password"]:focus, input[type="submit"]:focus, textarea:focus, a:focus{
     outline: none;
-}
-
-nav a {
-    color: #111111;
 }
 
 /* Switches */
@@ -111,13 +129,13 @@ nav a {
     -webkit-transition: .4s;
     transition: .4s;
 }
+
+.slider:hover{
+    background-color: rgb(189, 189, 189);
+} 
   
 input:checked + .slider {
     background-color: #2196F3;
-}
-  
-input:focus + .slider {
-    box-shadow: 0 0 1px #2196F3;
 }
   
 input:checked + .slider:before {
@@ -135,3 +153,48 @@ input:checked + .slider:before {
     border-radius: 50%;
 }
   
+.button, .textInput {
+    background-color: #3869b8;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 24px 72px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.button:hover {
+    background-color: #597db6;
+    -webkit-transition: .4s;
+    transition: .4s;
+
+}
+
+.textInput::placeholder {
+    color: white;
+    opacity: 50%;
+}
+
+.container { 
+    margin-top: 80px;
+    height: 500px;
+    position: relative;
+}
+
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.lower {
+    margin-top: 150px;
+}

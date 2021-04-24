@@ -2,16 +2,20 @@
     include_once 'header.php';
 ?>
     <section class="signup-form">
-        <h2>Sign Up</h2>
-
-        <div class="signup-form-form"></div>
+        <div class="center"></div>
             <form action="includes/signup.inc.php " method="post">
-                <input type="text" name="name" placeholder="Full name...">
-                <input type="text" name="email" placeholder="Email...">
-                <input type="text" name="uid" placeholder="Username...">
-                <input type="password" name="pwd" placeholder="Password...">
-                <input type="password" name="pwdrepeat" placeholder="Repeat password...">
-                <button type="submit" name="submit">Sign Up</button>
+                <div class='container'>
+                        <div class='center'>
+                            <input type="text" name="name" class='textInput' placeholder="Full name...">
+                            <input type="text" name="email" class='textInput' placeholder="Email...">
+                            <input type="text" name="uid" class='textInput' placeholder="Username...">
+                            <input type="password" name="pwd" class='textInput' placeholder="Password...">
+                            <input type="password" name="pwdrepeat" class='textInput' placeholder="Repeat password...">
+                            <input type="text" name="tplinkuser" class='textInput' placeholder="TP-Link username...">
+                            <input type="password" name="tplinkpwd" class='textInput' placeholder="TP-Link password...">
+                            <button type="submit" name="submit" class='button'>Sign Up</button>
+                        </div>
+                    </div>
             </form>
         </div>
 
@@ -32,7 +36,10 @@
             } else if ($_GET["error"] == "none") {
                 echo "<p>You have signed up!</p>";
             }   
-        }
+        } else if (isset($_SESSION["useruid"])) { // If the user is logged in then redirect away from signup page
+            header('Location: index.php');
+            exit();
+        } 
         ?>
 
     </section>
