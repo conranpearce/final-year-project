@@ -1,8 +1,8 @@
 <?php
 
-function emptyInputSignup($name, $email, $username, $pwd, $pwdRepeat) {
+function emptyInputSignup($name, $email, $username, $pwd, $pwdRepeat, $tplinkuser, $tplinkpwd) {
     $result; 
-    if (empty($name) || empty($email) || empty($username) || empty($pwd) || empty($pwdRepeat)) {
+    if (empty($name) || empty($email) || empty($username) || empty($pwd) || empty($pwdRepeat) || empty($tplinkuser) || empty($tplinkpwd)) {
         $result = true;
     } else {
         $result = false;
@@ -64,8 +64,8 @@ function uidExists($conn, $username, $email) {
     mysqli_stmt_close($stmt);
 }
 
-function createUser($conn, $name, $email, $username, $pwd) {
-    $sql = "INSERT INTO users (usersName, usersEmail, usersUid, usersPwd) VALUES (?, ?, ?, ?);";
+function createUser($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkpwd) {
+    $sql = "INSERT INTO users (usersName, usersEmail, usersUid, usersPwd, tpLinkUser, tpLinkPwd) VALUES (?, ?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
 
     if (!mysqli_stmt_prepare($stmt, $sql)) {
@@ -75,7 +75,8 @@ function createUser($conn, $name, $email, $username, $pwd) {
 
     $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
 
-    mysqli_stmt_bind_param($stmt, "ssss", $username, $email, $username, $hashedPwd);
+    mysqli_stmt_bind_param($stmt, "ssssss", $username, $email, $username, $hashedPwd, $tplinkuser, $tplinkpwd);
+    // mysqli_stmt_bind_param($stmt, "ssss", $username, $email, $username, $hashedPwd);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     header("location: ../signup.php?error=none");
@@ -110,6 +111,9 @@ function loginUser($conn, $username, $pwd) {
         session_start();
         $_SESSION["userid"] = $uidExists["usersId"];
         $_SESSION["useruid"] = $uidExists["usersUid"];
+        $_SESSION["userTpLinkUsr"] = $uidExists["tpLinkUser"];
+        $_SESSION["userTpLinkPwd"] = $uidExists["tpLinkPwd"];
+        
 
         $_SESSION['start_time'] = time();
 

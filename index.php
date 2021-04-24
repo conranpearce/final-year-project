@@ -2,9 +2,6 @@
     include_once 'header.php';
 ?>
     <section class="index-intro">
-
-        <h1>This is an introduction</h1>
-
         <?php 
             include('index-functions/curl-templates.php');
             include('index-functions/get-requests.php');
@@ -21,7 +18,18 @@
 
                 // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
                 $_LOGGED_IN = True;
-            } 
+            } else {
+            
+                echo "
+                    <div class='container'>
+                        <div class='center'>
+                            <a href='login.php' class='button'>LOGIN</a>
+                            <a href='signup.php' class='button'>SIGN UP</a>
+                        </div>
+                    </div>";
+                // echo "<a href='login.php' class='button'>LOGIN</a>";
+            }
+
 
             // Check if the argument logout is passed from JavaScript via AJAX 
             if ($_GET["argument"]=='logout'){
@@ -43,17 +51,14 @@
             if ($_LOGGED_IN == True) {
                 # Get the current time and date to pass into the national grid API
                 $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
-                echo "<h2>" . "Current date and time forecast for API is " . $currentDateTime . "</h2>";
-
                 $uuid = getUUID();
-
                 $token = getToken($uuid);
 
                 getCurrentCarbonIntensity();
-                getCurrentGenerationMix();
 
                 # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
                 $bestDay = getBestCarbonIntensity24hr($token, $currentDateTime);
+                getCurrentGenerationMix();
 
                 $deviceListDecoded = getDeviceList($token);
                 $deviceCount = count($deviceListDecoded['result']['deviceList']);
