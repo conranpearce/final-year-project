@@ -60,15 +60,19 @@
                 $bestDay = getBestCarbonIntensity24hr($token, $currentDateTime);
                 getCurrentGenerationMix();
 
-                $deviceListDecoded = getDeviceList($token);
-                $deviceCount = count($deviceListDecoded['result']['deviceList']);
-                $devices = array();
-                
-                // Set the devices_json available for the JS to interact with
-                $devices_json = setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices);
-                $schedule_devices_json = setScheduleButtons($token, $deviceListDecoded, $deviceCount, $devices);
-                $minutes = setMinutes($token, $bestDay);
-                $bestDayFormatted = setDaySchedule($bestDay, $token, $minutes);
+                // If the TP-Link credentials are not valid then do not display any buttons
+                if (empty($token)) {
+                    echo "<script type='text/javascript'>alert('Invalid TP-Link credentials');</script>";
+                } else { // Display the devices available to turn on/off and schedule 
+                    $deviceListDecoded = getDeviceList($token);
+                    $deviceCount = count($deviceListDecoded['result']['deviceList']);
+                    $devices = array();
+                    // Set the devices_json available for the JS to interact with
+                    $devices_json = setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices);
+                    $schedule_devices_json = setScheduleButtons($token, $deviceListDecoded, $deviceCount, $devices);
+                    $minutes = setMinutes($token, $bestDay);
+                    $bestDayFormatted = setDaySchedule($bestDay, $token, $minutes);
+                }
             }
         ?>
 
@@ -85,18 +89,31 @@
                 }
             }
 
-            async function tpLinkRequest(raw) {
+            // Set post request headers and variables
+            function postRequestHeaders(raw) {
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "text/plain");
-                
                 var requestOptions = {
                     method: 'POST',
                     headers: myHeaders,
                     body: raw,
                     redirect: 'follow'
                 };
-                return (await (await fetch("https://wap.tplinkcloud.com", requestOptions)).json());
+                return requestOptions;
+            }
 
+            // await TP-Link Request
+            async function tpLinkRequest(raw) {
+                return (await (await fetch("https://wap.tplinkcloud.com", postRequestHeaders(raw))).json());
+            }
+
+            // TP-Link Post request
+            function postTpLinkRequest(raw) {
+                fetch("https://wap.tplinkcloud.com", postRequestHeaders(raw))
+                    .then(response => response.text())
+                    .then(result => console.log(result))
+                    .catch(error => console.log('error', error)
+                );
             }
 
             // async function to return the fetch API which retrieves the state (relay_state) of the device selected by the user
@@ -114,15 +131,12 @@
             async function smartPlugClick(cb, id) {
                 console.log(cb.checked);
                 console.log(id);
-
                 var deviceObj = JSON.parse('<?= $devices_json; ?>');
 
                 for (var i = 0; i < deviceObj.length; i++) {
                     if (deviceObj[i]['userDeviceAlias'] == id) {
                         console.log("Selected is ", deviceObj[i]);
-
                         let tpLinkReturn = [];
-
                         // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
                         try {
                             tpLinkReturn = await callTplinkAPI(deviceObj[i]);
@@ -130,7 +144,6 @@
                             console.log("Error");
                             console.log(e);
                         }
-
                         deviceReturnResponse = tpLinkReturn["result"]["responseData"]
 
                         if (deviceReturnResponse.includes('relay_state":0')) {
@@ -138,21 +151,7 @@
                         } else if (deviceReturnResponse.includes('relay_state":1')) {
                             var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"system\\\":{\\\"set_relay_state\\\":{\\\"state\\\":0}}}\"\n }\n}`;
                         }
-
-                        var myHeaders = new Headers();
-                        myHeaders.append("Content-Type", "text/plain");
-
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
-
-                        fetch("https://wap.tplinkcloud.com", requestOptions)
-                            .then(response => response.text())
-                            .then(result => console.log(result))
-                            .catch(error => console.log('error', error));
+                        postTpLinkRequest(raw);
                     }
                 }
             }
@@ -171,7 +170,7 @@
 
                         // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
                         try {
-                            tpLinkReturn = await callTplink(deviceObj[i]);
+                            tpLinkReturn = await callTplinkAPI(deviceObj[i]);
                         }  catch (e) {
                             console.log("Error");
                             console.log(e);
@@ -186,21 +185,7 @@
                         } else if (deviceReturnResponse.includes('on_off\":1')) {
                             var raw = `{\n \"method": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"brightness\\\":100,\\\"color_temp\\\":3500,\\\"ignore_default\\\":0,\\\"mode\\\":\\\"normal\\\",\\\"on_off\\\":0,\\\"transition_period\\\":1000}}}\"\n }\n}`;
                         }
-
-                        var myHeaders = new Headers();
-                        myHeaders.append("Content-Type", "text/plain");
-
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
-
-                        fetch("https://wap.tplinkcloud.com", requestOptions)
-                            .then(response => response.text())
-                            .then(result => console.log(result))
-                            .catch(error => console.log('error', error));
+                        postTpLinkRequest(raw);
                     }
                 }
             }
@@ -244,26 +229,16 @@
 
                         if (deviceReturnResponseSchedule.includes('rule_list\":[]')) { // no schedule                     
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":' + bestDayFormatted + ',\\"smin\\":' + minutes + ',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
-                            console.log("The device is now scheduled");
+                            deviceId = (id.replace(' ', '') + '-button').toLowerCase();
+                            console.log(document.getElementById("ev"));
+                            document.getElementById(deviceId).innerHTML = "The device is now scheduled";
                         } else {
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"delete_all_rules\\":null, \\"erase_runtime_stat\\":null}}}"}}';
                             console.log("The device is not scheduled");
+                            deviceId = (id.replace(' ', '') + '-button').toLowerCase();
+                            document.getElementById(deviceId).innerHTML = "The device is now not scheduled";
                         }
-
-                        var myHeaders = new Headers();
-                        myHeaders.append("Content-Type", "text/plain");
-
-                        var requestOptions = {
-                            method: 'POST',
-                            headers: myHeaders,
-                            body: raw,
-                            redirect: 'follow'
-                        };
-
-                        fetch("https://wap.tplinkcloud.com", requestOptions)
-                            .then(response => response.text())
-                            .then(result => console.log(result))
-                            .catch(error => console.log('error', error));
+                        postTpLinkRequest(raw);
                     }
                 }
             }
