@@ -1,6 +1,10 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 body {
-    /* background-color: #fff; */
     background-color: rgb(240, 240, 240);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .wrapper {
@@ -8,15 +12,18 @@ body {
     margin: 0 auto;
 }
 
-h1, h2, h3, h4, h5, h6, p, .button, .textInput {
-    font-family: 'Roboto', sans-serif;
+h1, h2, h3, h4, h5, h6, .button, .textInput {
     color: #111111;
     line-height: 24px;
 }
 
+p {
+    color: #111111;
+    line-height: 10px;
+}
 h1 {
     font-weight: 600;
-    font-size: 32px;
+    font-size: 22px;
     padding: 20px 0;
     text-align: center;
 }
@@ -24,16 +31,14 @@ h1 {
 
 h2 {
     font-weight: 400;
-    font-size: 28px;
-    padding: 20px 0;
+    font-size: 16px;
+    padding: 0 0;
     text-align: center;
-    text-transform: capitalize;
 }
 
 nav{
     margin: 20px 0;
     padding: 0;
-    
 }
 
 nav li {
@@ -69,12 +74,13 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="submit"]:foc
     outline: none;
 }
 
-/* Switches */
+/* Buttons */
 .switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
+    margin: 3px;
 }
   
 .switch input { 
@@ -138,7 +144,6 @@ input:checked + .slider:before {
     padding: 24px 72px;
     text-align: center;
     text-decoration: none;
-    display: inline-block;
     font-size: 16px;
     cursor: pointer;
     display: block;
@@ -149,7 +154,6 @@ input:checked + .slider:before {
     background-color: #597db6;
     -webkit-transition: .4s;
     transition: .4s;
-
 }
 
 .textInput::placeholder {
@@ -158,8 +162,8 @@ input:checked + .slider:before {
 }
 
 .container { 
-    margin-top: 80px;
-    height: 500px;
+    margin-top: 300px;
+    height: 100px;
     position: relative;
 }
 
@@ -174,4 +178,19 @@ input:checked + .slider:before {
 
 .lower {
     margin-top: 150px;
+}
+
+.header {
+    font-weight: bold;
+}
+
+.about {
+    text-align: center;
+    margin-top: 150px;
+}
+
+.link {
+    text-decoration: none;
+    font-weight: bold;
+    color: #111111;
 }

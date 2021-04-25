@@ -34,7 +34,7 @@
 
     // Set the buttons to schedule appliances 
     function setScheduleButtons($token, $deviceListDecoded, $deviceCount, $devices) {
-        echo "<h2>Schedule on/off:</h2>";
+        echo "<p class='header'>Schedule on/off:</p>";
         // For all the devices
         for ($x = 0; $x < $deviceCount; $x++) {
             $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));

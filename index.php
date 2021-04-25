@@ -9,17 +9,14 @@
             include('index-functions/set-variables.php');
             include('index-functions/on-off-buttons.php');
             include('index-functions/schedule-buttons.php');
+            // include('generation.php');
             
             // Global variable
             $_LOGGED_IN = False;
 
             if (isset($_SESSION["useruid"])) {
-                echo "<p>Hello there " . $_SESSION["useruid"] . "</p>";
-
-                // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
-                $_LOGGED_IN = True;
+                $_LOGGED_IN = True; // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
             } else {
-            
                 echo "
                     <div class='container'>
                         <div class='center'>
@@ -27,9 +24,7 @@
                             <a href='signup.php' class='button'>SIGN UP</a>
                         </div>
                     </div>";
-                // echo "<a href='login.php' class='button'>LOGIN</a>";
             }
-
 
             // Check if the argument logout is passed from JavaScript via AJAX 
             if ($_GET["argument"]=='logout'){
@@ -50,6 +45,7 @@
             // If the user is logged in then carry out this code
             if ($_LOGGED_IN == True) {
                 # Get the current time and date to pass into the national grid API
+                date_default_timezone_set('Europe/London');
                 $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
                 $uuid = getUUID();
                 $token = getToken($uuid);
@@ -58,7 +54,7 @@
 
                 # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
                 $bestDay = getBestCarbonIntensity24hr($token, $currentDateTime);
-                getCurrentGenerationMix();
+                // getCurrentGenerationMix();
 
                 // If the TP-Link credentials are not valid then do not display any buttons
                 if (empty($token)) {
@@ -73,6 +69,9 @@
                     $minutes = setMinutes($token, $bestDay);
                     $bestDayFormatted = setDaySchedule($bestDay, $token, $minutes);
                 }
+
+                // getCurrentGenerationMix();
+
             }
         ?>
 
@@ -104,6 +103,7 @@
 
             // await TP-Link Request
             async function tpLinkRequest(raw) {
+                console.log("raw ", raw);
                 return (await (await fetch("https://wap.tplinkcloud.com", postRequestHeaders(raw))).json());
             }
 
@@ -128,6 +128,26 @@
                 return tpLinkRequest(raw);
             }
 
+            // Return the day scheduled
+            function findDay(schedule) {
+                console.log('find day ', schedule);
+                if (schedule.includes('"wday":[1,0,0,0,0,0,0]')) { 
+                    return "Sunday";
+                } else if (schedule.includes('"wday":[0,1,0,0,0,0,0]')) { 
+                    return "Monday";
+                } else if (schedule.includes('"wday":[0,0,1,0,0,0,0]')) { 
+                    return "Tuesday";
+                } else if (schedule.includes('"wday":[0,0,0,1,0,0,0]')) { 
+                    return "Wednesday";
+                } else if (schedule.includes('"wday":[0,0,0,0,1,0,0]')) { 
+                    return "Thursday";
+                } else if (schedule.includes('"wday":[0,0,0,0,0,1,0]')) { 
+                    return "Friday";
+                } else if (schedule.includes('"wday":[0,0,0,0,0,0,1]')) { 
+                    return "Saturday";
+                } 
+            }
+            
             async function smartPlugClick(cb, id) {
                 console.log(cb.checked);
                 console.log(id);
@@ -194,12 +214,7 @@
                 var token = '<?= $token; ?>';
                 var minutes = '<?= $minutes; ?>';
                 var bestDayFormatted = '<?= $bestDayFormatted; ?>';
-
-                console.log(cb.checked);
-                console.log(id);
-
                 var deviceObj = JSON.parse('<?= $devices_json; ?>');
-
                 for (var i = 0; i < deviceObj.length; i++) {
                     if (deviceObj[i]['userDeviceAlias'] == id) {
                         console.log("Selected is ", deviceObj[i]);
@@ -213,7 +228,6 @@
                             console.log("Error");
                             console.log(e);
                         }
-
                         deviceReturnResponse = tpLinkReturn["result"]["responseData"];
 
                         // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
@@ -223,22 +237,35 @@
                             console.log("Error");
                             console.log(e);
                         }
-
                         console.log("tpLinkReturnSchedule ", tpLinkReturnSchedule);
                         deviceReturnResponseSchedule = tpLinkReturnSchedule["result"]["responseData"];
 
                         if (deviceReturnResponseSchedule.includes('rule_list\":[]')) { // no schedule                     
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"add_rule\\":{\\"stime_opt\\":0,\\"wday\\":' + bestDayFormatted + ',\\"smin\\":' + minutes + ',\\"enable\\":1,\\"repeat\\":1,\\"etime_opt\\":-1,\\"name\\":\\"plug on\\",\\"eact\\":-1,\\"month\\":0,\\"sact\\":1,\\"year\\":0,\\"longitude\\":0,\\"day\\":0,\\"force\\":0,\\"latitude\\":0,\\"emin\\":0},\\"set_overall_enable\\":{\\"enable\\":1}}}"}}';
+                            postTpLinkRequest(raw);
+                            // Get id for the smart device button
                             deviceId = (id.replace(' ', '') + '-button').toLowerCase();
                             console.log(document.getElementById("ev"));
-                            document.getElementById(deviceId).innerHTML = "The device is now scheduled";
+
+                            // Get the current device state (updated after clicking the webpage button), pass in the device object the user has selected
+                            try {
+                                // Find scheduled time
+                                tpLinkNewSchedule = await callTplinkAPIScheduled(deviceObj[i]);   
+                                console.log("tpLinkNewSchedule ", tpLinkNewSchedule );
+                                updatedSchedule = tpLinkNewSchedule["result"]["responseData"];
+                                document.getElementById(deviceId).innerHTML = "Device is scheduled for " + findDay(updatedSchedule);
+                            }  catch (e) {
+                                console.log("Error");
+                                console.log(e);
+                            }
                         } else {
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"delete_all_rules\\":null, \\"erase_runtime_stat\\":null}}}"}}';
                             console.log("The device is not scheduled");
                             deviceId = (id.replace(' ', '') + '-button').toLowerCase();
                             document.getElementById(deviceId).innerHTML = "The device is now not scheduled";
+
+                            postTpLinkRequest(raw);
                         }
-                        postTpLinkRequest(raw);
                     }
                 }
             }
