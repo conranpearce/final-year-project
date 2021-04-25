@@ -1,3 +1,9 @@
-# login-system
+# Digital Systems Project
 
-https://www.youtube.com/watch?v=gCo6JqGMi30
+This application manages and schedules TP-Link smart devices, helping an individual lower their local carbon impact.
+
+The [National Grid's API](http://carbonintensity.org.uk/) has been used to provide carbon intensity related data.
+
+TP-Link smart plugs and bulbs are accessed through HTTP requests to be turned on/off and scheduled.
+
+MAMP is the packaged used for local development, using PHP, MySQL, JavaScript, HTML and CSS to program the application.
