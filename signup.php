@@ -22,19 +22,21 @@
         <?php 
         if(isset($_GET["error"])) {
             if ($_GET["error"] == "emptyinput") {
-                echo "<p>Fill in all fields</p>";
+                echo "<script type='text/javascript'>alert('Fill in all fields');</script>";
             } else if ($_GET["error"] == "invaliduid") {
-                echo "<p>Choose a proper username!</p>";
+                echo "<script type='text/javascript'>alert('Choose a valid username');</script>";
             } else if ($_GET["error"] == "invalidemail") {
-                echo "<p>Choose a proper email!</p>";
+                echo "<script type='text/javascript'>alert('Choose a valid email');</script>";
             } else if ($_GET["error"] == "passworddontmatch") {
-                echo "<p>Passwords doesn't match!</p>";
+                echo "<script type='text/javascript'>alert('Please enter matching passwords');</script>";
             } else if ($_GET["error"] == "stmtfailed") {
-                echo "<p>Something went wrong, try again!</p>";
+                echo "<script type='text/javascript'>alert('Something went wrong, please try again!');</script>";
             } else if ($_GET["error"] == "usernametaken") {
-                echo "<p>Username already taken, choose another username!</p>";
+                echo "<script type='text/javascript'>alert('Username already taken, please choose another username!');</script>";
             } else if ($_GET["error"] == "none") {
-                echo "<p>You have signed up!</p>";
+                echo "<script type='text/javascript'>alert('Sign up successful!');</script>";
+                header('Location: login.php');
+                exit();
             }   
         } else if (isset($_SESSION["useruid"])) { // If the user is logged in then redirect away from signup page
             header('Location: index.php');

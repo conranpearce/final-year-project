@@ -10,11 +10,7 @@
     <meta name="description" content="Log in system">
     <meta name=viewport content="width=device-width, initial-scale=1">
     <title>Carbon Intensity</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital@1&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/reset.css">
-
 </head>
 
 <body>
@@ -22,10 +18,13 @@
 <nav>
     <div class="wrapper">
         <a href="index.php"></a>
-
         <ul>
             <?php 
                 if (isset($_SESSION["useruid"])) {
+                    echo "<li><a href='index.php'>Home</a></li>";
+                    echo "<li><a href='about.php'>About</a></li>";
+                    echo "<li><a href='https://github.com/conranpearce/login-system' target='_blank'>GitHub</a></li>";
+                    echo "<li><a href='generation.php'>Generation Mix</a></li>";
                     echo "<li><a href='includes/logout.inc.php'>Log out</a></li>";
                 } 
             ?>

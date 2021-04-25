@@ -1,9 +1,11 @@
 <?php
     // Set the buttons to turn the smart devices on and off
     function setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices) {
-        echo "<h2>Turn on/off:</h2>";
+        echo "<p class='header'>Turn on/off:</p>";
+        echo "<div class='grid-container'>";
         // For all the devices
         for ($x = 0; $x < $deviceCount; $x++) {
+            echo "<div class='grid-item'>";
             echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
             $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
             $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
@@ -14,7 +16,6 @@
             $dataResponse = json_encode($relayStateDecoded["result"]["responseData"]);
             // If a smart plug then add a button
             if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTPLUGSWITCH') !== false) {      
-                echo "<p> Smart plug </p>";
                 // Setting button for device on the website
                 if (stripos($dataResponse, 'relay_state\":0') !== false) { // If contains relay_state being 0 in the response
                     array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
@@ -34,8 +35,6 @@
                 }
             // If it is a smart bulb then carry out these requests
             } else if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTBULB') !== false) {      
-                echo "<p> Smart bulb </p>";
-
                 // Setting button for device on the website
                 if (stripos($dataResponse, 'on_off\":0') !== false) { // If contains relay_state being 0 in the response
                     array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 0]);
@@ -54,7 +53,9 @@
                     setDeviceButton($deviceName, $checkboxType);
                 }
             }
+            echo "</div>";
         }
+        echo "</div>";
         // convert array into json
         $devices_encoded = json_encode($devices);
         return $devices_encoded;

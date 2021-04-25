@@ -17,9 +17,9 @@
         <?php 
         if(isset($_GET["error"])) {
             if ($_GET["error"] == "emptyinput") {
-                echo "<p>Fill in all fields</p>";
+                echo "<script type='text/javascript'>alert('Fill in all fields');</script>";
             } else if ($_GET["error"] == "wronglogin") {
-                echo "<p>Incorrect login!</p>";
+                echo "<script type='text/javascript'>alert('Incorrect login');</script>";
             } 
         } else if (isset($_SESSION["useruid"])) { // If the user is logged in then redirect away from signup page
             header('Location: index.php');
