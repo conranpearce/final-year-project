@@ -42,7 +42,6 @@ nav{
 }
 
 nav li {
-    background-color: #ccc;
     border: none;
     border-radius: 4px;
     color: white;
@@ -61,7 +60,7 @@ nav a {
 }
 
 nav li:hover{
-    background-color: rgb(189, 189, 189);
+    background-color: #ccc;
     -webkit-transition: .4s;
     transition: .4s;
 } 
@@ -182,6 +181,7 @@ input:checked + .slider:before {
 
 .header {
     font-weight: bold;
+    text-align: center;
 }
 
 .about {
@@ -193,4 +193,59 @@ input:checked + .slider:before {
     text-decoration: none;
     font-weight: bold;
     color: #111111;
+}
+
+.grid-container {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+    left: 50%;
+    -ms-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    margin: 0;
+    position: relative;
+  }
+  
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 6px;
+    font-size: 18px;
+    text-align: center;
+    margin: 6px;
+}
+
+/* Setting carbon colour for the user */
+.intensity {
+    background-color: #e46731;
+    border-radius: 10px;
+    padding: 6px;
+    font-size: 18px;
+    text-align: center;
+    margin: 6px;
+    width: 30%;
+    -ms-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    position: relative;
+    left: 50%;
+
+}
+
+.very-low  {
+    background-color: #258349;
+}
+.low {
+    background-color: #9cd9b6;
+}
+
+.moderate {
+    background-color: #f0c330; 
+}
+
+.high {
+    background-color: #e46731;
+}
+
+.very-high {
+    background-color: #a7332b;
 }

@@ -2,8 +2,10 @@
     // Set the buttons to turn the smart devices on and off
     function setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices) {
         echo "<p class='header'>Turn on/off:</p>";
+        echo "<div class='grid-container'>";
         // For all the devices
         for ($x = 0; $x < $deviceCount; $x++) {
+            echo "<div class='grid-item'>";
             echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";
             $deviceName = str_replace(' ', '', strtolower($deviceListDecoded['result']['deviceList'][$x]['alias']));
             $deviceID = $deviceListDecoded['result']['deviceList'][$x]['deviceId'];
@@ -51,7 +53,9 @@
                     setDeviceButton($deviceName, $checkboxType);
                 }
             }
+            echo "</div>";
         }
+        echo "</div>";
         // convert array into json
         $devices_encoded = json_encode($devices);
         return $devices_encoded;

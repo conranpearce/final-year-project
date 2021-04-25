@@ -253,7 +253,7 @@
                                 tpLinkNewSchedule = await callTplinkAPIScheduled(deviceObj[i]);   
                                 console.log("tpLinkNewSchedule ", tpLinkNewSchedule );
                                 updatedSchedule = tpLinkNewSchedule["result"]["responseData"];
-                                document.getElementById(deviceId).innerHTML = "Device is scheduled for " + findDay(updatedSchedule);
+                                document.getElementById(deviceId).innerHTML = "Scheduled for " + findDay(updatedSchedule);
                             }  catch (e) {
                                 console.log("Error");
                                 console.log(e);
@@ -262,7 +262,7 @@
                             var raw = '{"method": "passthrough","params": {"deviceId": "' + deviceObj[i]['userDeviceId'] + '","token": "' + token +'","requestData": "{\\"schedule\\":{\\"delete_all_rules\\":null, \\"erase_runtime_stat\\":null}}}"}}';
                             console.log("The device is not scheduled");
                             deviceId = (id.replace(' ', '') + '-button').toLowerCase();
-                            document.getElementById(deviceId).innerHTML = "The device is now not scheduled";
+                            document.getElementById(deviceId).innerHTML = "The device is not scheduled";
 
                             postTpLinkRequest(raw);
                         }
