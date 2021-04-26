@@ -23,10 +23,10 @@
             echo "<a href='generation.php'>Generation Mix</a>";
             echo "<a href='includes/logout.inc.php'>Log out</a>";
             echo "<a href='javascript:void(0);' class='menu-icon' onclick='menuInteraction()'>
-                <div class='hamburger-icon'></div>
-                <div class='hamburger-icon'></div>
-                <div class='hamburger-icon'></div>
-            </a>";
+                    <div class='hamburger-icon'></div>
+                    <div class='hamburger-icon'></div>
+                    <div class='hamburger-icon'></div>
+                </a>";
         }
     ?>
 </div>

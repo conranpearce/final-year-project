@@ -76,12 +76,29 @@ function createUser($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkp
     $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
 
     mysqli_stmt_bind_param($stmt, "ssssss", $username, $email, $username, $hashedPwd, $tplinkuser, $tplinkpwd);
-    // mysqli_stmt_bind_param($stmt, "ssss", $username, $email, $username, $hashedPwd);
     mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     header("location: ../signup.php?error=none");
     exit();
 }
+
+// function createCO2($conn, $userId, $co2Used, $co2Saved) {
+//     $sql = "INSERT INTO users (usersId, co2Used, co2Saved) VALUES (?, ?, ?);";
+//     $stmt = mysqli_stmt_init($conn);
+
+//     if (!mysqli_stmt_prepare($stmt, $sql)) {
+//         header("location: ../signup.php?error=stmtfailed");
+//         exit();
+//     }
+
+//     $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
+
+//     mysqli_stmt_bind_param($stmt, "sss", $userId, $co2Used, $co2Saved);
+//     mysqli_stmt_execute($stmt);
+//     mysqli_stmt_close($stmt);
+//     header("location: ../signup.php?error=none");
+//     exit();
+// }
 
 function emptyInputLogin($username, $pwd) {
     $result; 
@@ -113,11 +130,34 @@ function loginUser($conn, $username, $pwd) {
         $_SESSION["useruid"] = $uidExists["usersUid"];
         $_SESSION["userTpLinkUsr"] = $uidExists["tpLinkUser"];
         $_SESSION["userTpLinkPwd"] = $uidExists["tpLinkPwd"];
-        
-
         $_SESSION['start_time'] = time();
 
         header("location: ../index.php");
         exit();
     }
+}
+
+
+function getIntensity($conn, $userId) {  
+    $sql = "SELECT * FROM carbon_intensity_saved WHERE usersId = ?;";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../signup.php?error=stmtfailed");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "s", $userId);
+    mysqli_stmt_execute($stmt);
+
+    $resultData = mysqli_stmt_get_result($stmt);
+    
+    if ($row = mysqli_fetch_assoc($resultData)) {
+        return $row;
+    } else {
+        $result = false;
+        return $result;
+    }
+
+    mysqli_stmt_close($stmt);
 }

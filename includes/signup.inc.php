@@ -39,7 +39,7 @@ if (isset($_POST["submit"])) {
     }
 
     createUser($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkpwd);
-
+    
 } else {
     header("location: ../signup.php");
     exit();
