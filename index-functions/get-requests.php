@@ -26,8 +26,8 @@
         } else if ($carbonIntensityDecoded['data'][0]['intensity']['index'] == 'very high') {
             echo "<div class='intensity very-high'>";
         } 
-        echo "<h2>" . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</h2>";
-        echo "<h2>" . $carbonIntensityDecoded['data'][0]['intensity']['forecast'] . " gCO2/KwH</h2>";
+        echo "<p class='gco2'>" . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</p>";
+        echo "<p class='gco2'>" . $carbonIntensityDecoded['data'][0]['intensity']['forecast'] . " gCO2/KwH</p>";
         echo "</div>";
     }
 
@@ -81,7 +81,7 @@
         
         # Output to the user the lowest time and forecast
         echo "<h2 class='header'> Best forecasted time in 24hrs</h2>";
-        echo "<h2> ". $bestTime[0] . " at " . $bestDate[0] . "</h2>";
+        echo "<h2>". $bestTime[0] . " at " . $bestDate[0] . "</h2>";
         echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/KwH</h2>";
         return $bestCarbonIntensityTime['from'];
     }

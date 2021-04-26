@@ -13,7 +13,7 @@
         }
 
         if ($_LOGGED_IN == True) {
-            echo " <div class='about'>
+            echo "<div class='about'>
                     <p>This application manages and schedules  TP-Link smart devices, to help reduce an individual's local carbon impact.</p>
                     <p>The <a class='link' href='http://carbonintensity.org.uk/' target='_blank'>National Grid's API</a> has been used to provide carbon intensity related data, updating every 30 minutes.</p>
                     <p>TP-Link smart plugs and bulbs are able to be turned on/off through the application.</p>

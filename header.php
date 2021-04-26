@@ -15,21 +15,32 @@
 
 <body>
 
-<nav>
-    <div class="wrapper">
-        <a href="index.php"></a>
-        <ul>
-            <?php 
-                if (isset($_SESSION["useruid"])) {
-                    echo "<li><a href='index.php'>Home</a></li>";
-                    echo "<li><a href='about.php'>About</a></li>";
-                    echo "<li><a href='https://github.com/conranpearce/login-system' target='_blank'>GitHub</a></li>";
-                    echo "<li><a href='generation.php'>Generation Mix</a></li>";
-                    echo "<li><a href='includes/logout.inc.php'>Log out</a></li>";
-                } 
-            ?>
-        </ul>
-    </div>
-</nav>
+<div class="nav wrapper" id="navigation-bar">
+    <?php 
+        if (isset($_SESSION["useruid"])) {
+            echo "<a href='index.php'>Home</a>";
+            echo "<a href='about.php'>About</a>";
+            echo "<a href='generation.php'>Generation Mix</a>";
+            echo "<a href='includes/logout.inc.php'>Log out</a>";
+            echo "<a href='javascript:void(0);' class='menu-icon' onclick='menuInteraction()'>
+                <div class='hamburger-icon'></div>
+                <div class='hamburger-icon'></div>
+                <div class='hamburger-icon'></div>
+            </a>";
+        }
+    ?>
+</div>
+
+<script>
+    function menuInteraction() {
+        var x = document.getElementById("navigation-bar");
+        if (x.className === "nav wrapper") {
+            x.className += " responsive wrapper";
+        } else {
+            x.className = "nav wrapper";
+        }
+    }
+
+</script>
 
 <div class="wrapper">
