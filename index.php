@@ -42,6 +42,15 @@
                 echo "success";
             }
 
+            if ($_GET["argument"]=='schedule'){
+                echo "<p>SCHEDULE</p>";
+                
+                if ($_GET["act"]=='device'){
+                    include('includes/set-carbon-intensity-saved.inc.php');
+                }
+
+            }
+
             // If the user is logged in then carry out this code
             if ($_LOGGED_IN == True) {
                 # Get the current time and date to pass into the national grid API
@@ -49,11 +58,12 @@
                 $currentDateTime = date("Y-m-d") . "T" .date("H:i") ."Z";
                 $uuid = getUUID();
                 $token = getToken($uuid);
-
-                getCurrentCarbonIntensity();
+                $currentCarbonForecast = getCurrentCarbonIntensity();
 
                 # Get carbon intensity period in the next 24 hours. Then set the device (manually inputted at the moment to turn on/schedule at the best time)
                 $bestDay = getBestCarbonIntensity24hr($token, $currentDateTime);
+
+                $bestDay = $bestDay['from'];
                 // getCurrentGenerationMix();
 
                 // If the TP-Link credentials are not valid then do not display any buttons
@@ -255,6 +265,8 @@
                                 console.log("tpLinkNewSchedule ", tpLinkNewSchedule );
                                 updatedSchedule = tpLinkNewSchedule["result"]["responseData"];
                                 document.getElementById(deviceId).innerHTML = "Scheduled for " + findDay(updatedSchedule);
+
+                                schedulePlugs();
                             }  catch (e) {
                                 console.log("Error");
                                 console.log(e);
@@ -275,6 +287,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script type="text/javascript" src="js/inactivity.js"></script>
         <script type="text/javascript" src="js/update.js"></script>
+        <script type="text/javascript" src="js/schedule.js"></script>
     </section>
 
 <?php

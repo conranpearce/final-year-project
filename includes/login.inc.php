@@ -11,26 +11,7 @@ if(isset($_POST["submit"])) {
         header("location: ../login.php?error=emptyinput");
         exit();
     }
-
-    // loginUser($conn, $username, $pwd);
-
-    // createCO2($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkpwd);
-
-    echo "<p> get intesnity " . getIntensity($conn, 1)  . "</p>";
-
-    $intensity = getIntensity($conn, 1);
-
-    $_SESSION["co2U"] = $intensity["co2Used"];
-
-    echo "<p> co2 " . $_SESSION["co2U"]  . "</p>";
-
-    // $id = 2;
-    // $used = 39;
-    // $saved = 200;
-
-    // createCO2($conn, $id, $used, $saved);
-
-
+    loginUser($conn, $username, $pwd);
 } else {
     header("location: ../login.php");
     exit();

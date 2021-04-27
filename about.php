@@ -21,18 +21,6 @@
                     <p>Carbon intensity is measured by grams of CO2 to create a unit of electricity a kilowatt per hour (gCO2/kWh).</p>
                     <a class='link' href='https://github.com/conranpearce' target='_blank'><i class='fab fa-github fa-4x icon'></i></a>
                 </div>";
-
-            $userid = $_SESSION["userid"];
-            echo "<p> " . $userid . "</p>";
-
-
-            // uidExists($conn, $username, $email)
-            // $intensity = getIntensity($conn, 1);
-
-            // $_SESSION["co2U"] = $co2Used["co2Used"];
-
-            // echo "<p> ce2U" . $_SESSION["co2U"] . " </p>";
-
         }            
     ?>
 </section>

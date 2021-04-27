@@ -26,9 +26,15 @@
         } else if ($carbonIntensityDecoded['data'][0]['intensity']['index'] == 'very high') {
             echo "<div class='intensity very-high'>";
         } 
-        echo "<p class='gco2'>" . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</p>";
-        echo "<p class='gco2'>" . $carbonIntensityDecoded['data'][0]['intensity']['forecast'] . " gCO2/KwH</p>";
+
+        $carbonIndex = $carbonIntensityDecoded['data'][0]['intensity']['index'];
+        $carbonForecast = $carbonIntensityDecoded['data'][0]['intensity']['forecast'];
+
+        echo "<p class='gco2'>" . $carbonIndex . "</p>";
+        echo "<p class='gco2'>" . $carbonForecast . " gCO2/KwH</p>";
         echo "</div>";
+
+        return $carbonForecast;
     }
 
     // Get the current generation mix from the National Grid API
@@ -83,6 +89,7 @@
         echo "<h2 class='header'> Best forecasted time in 24hrs</h2>";
         echo "<h2>". $bestTime[0] . " at " . $bestDate[0] . "</h2>";
         echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/KwH</h2>";
-        return $bestCarbonIntensityTime['from'];
+        // return $bestCarbonIntensityTime['from'];
+        return $bestCarbonIntensityTime;
     }
 ?>

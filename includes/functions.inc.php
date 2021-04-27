@@ -82,23 +82,21 @@ function createUser($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkp
     exit();
 }
 
-// function createCO2($conn, $userId, $co2Used, $co2Saved) {
-//     $sql = "INSERT INTO users (usersId, co2Used, co2Saved) VALUES (?, ?, ?);";
-//     $stmt = mysqli_stmt_init($conn);
+function createCO2($conn, $userId, $co2Used, $co2Saved) {
+    $sql = "INSERT INTO carbon_intensity_saved (usersId, co2Used, co2Saved) VALUES (?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
 
-//     if (!mysqli_stmt_prepare($stmt, $sql)) {
-//         header("location: ../signup.php?error=stmtfailed");
-//         exit();
-//     }
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../login.php?error=wronglogin");
+        exit();
+    }
 
-//     $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
-
-//     mysqli_stmt_bind_param($stmt, "sss", $userId, $co2Used, $co2Saved);
-//     mysqli_stmt_execute($stmt);
-//     mysqli_stmt_close($stmt);
-//     header("location: ../signup.php?error=none");
-//     exit();
-// }
+    mysqli_stmt_bind_param($stmt, "sss", $userId, $co2Used, $co2Saved);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+    // header("location: ../index.php");
+    // exit();
+}
 
 function emptyInputLogin($username, $pwd) {
     $result; 
@@ -137,11 +135,11 @@ function loginUser($conn, $username, $pwd) {
     }
 }
 
-
 function getIntensity($conn, $userId) {  
     $sql = "SELECT * FROM carbon_intensity_saved WHERE usersId = ?;";
     $stmt = mysqli_stmt_init($conn);
 
+    // SORT THIS ERROR MESSAGE
     if (!mysqli_stmt_prepare($stmt, $sql)) {
         header("location: ../signup.php?error=stmtfailed");
         exit();
@@ -152,12 +150,20 @@ function getIntensity($conn, $userId) {
 
     $resultData = mysqli_stmt_get_result($stmt);
     
-    if ($row = mysqli_fetch_assoc($resultData)) {
-        return $row;
-    } else {
-        $result = false;
-        return $result;
+    $rows = array();
+
+    while($row = mysqli_fetch_assoc($resultData)) {
+        $rows[] = $row;
     }
+    return $rows;
+
+
+    // if ($row = mysqli_fetch_assoc($resultData)) {
+    //     return $row;
+    // } else {
+    //     $result = false;
+    //     return $result;
+    // }
 
     mysqli_stmt_close($stmt);
 }
