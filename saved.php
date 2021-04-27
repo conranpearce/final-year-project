@@ -13,50 +13,86 @@
         }
 
         if ($_LOGGED_IN == True) {
-            echo "<div'>
-                    <p>Graphs</p>
-                </div>";
-            
-            // $intensity = include('includes/get-carbon-intensity-saved.inc.php');
-            $intensity = require('includes/get-carbon-intensity-saved.inc.php');
-
-            for ($x = 0; $x < count($intensity); $x++) {
-
-                echo "<p> co2Used " . $intensity[$x]['co2Used'] . "</p>";
-                echo "<p> co2Saved " . $intensity[$x]['co2Saved'] . "</p>";
-            }
-
-           
+            $intensity = require('includes/get-carbon-intensity-saved.inc.php');   
         }            
     ?>
 
-    <div>
+    <div class="chart wrapper">
         <canvas id="myChart"></canvas>
-    </div>
+	</div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
+    
     <script>
+
+        var intensity = <?php echo json_encode($intensity); ?>;
+
+        var intensityUsed = []
+        var intensitySaved = []
+        var intensityId = []
+
+        for(var i=0; i<intensity.length; i++){
+            console.log(intensity[i]);
+            intensityUsed.push(intensity[i]['co2Used']);
+            intensitySaved.push(intensity[i]['co2Saved']);
+            intensityId.push(intensity[i]['carbonIntensityId']);
+        }
+
+        console.log("intensityUsed ", intensityUsed);
+        console.log("intensitySaved ", intensitySaved);
+        console.log("intensityId ", intensityId);
+
+
         var ctx = document.getElementById('myChart').getContext('2d');
         var chart = new Chart(ctx, {
             // The type of chart we want to create
             type: 'line',
-
+            title: 'Title',
             // The data for our dataset
             data: {
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
+                labels: intensityId,
                 datasets: [{
-                    label: "My First dataset",
-                    backgroundColor: 'rgb(255, 99, 132)',
-                    borderColor: 'rgb(255, 99, 132)',
-                    data: [0, 10, 5, 2, 20, 30, 45],
+                    label: "CO2 used",
+                    borderColor: '#258349',
+                    fill: false,
+                    data: intensityUsed,
+                },
+                {
+                    label: "CO2 at time of scheduling",
+                    borderColor: '#a7332b',
+                    fill: false,
+                    data: intensitySaved,
                 }]
             },
-
             // Configuration options go here
-            options: {}
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            display: false
+                        }
+                    }]
+                },
+                elements: {
+                    line: {
+                    tension: 0
+                    }
+                },
+                legend: {
+                    onClick: null
+                },
+                scales: {
+                    yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'gCO2/kWh'
+                    }
+                    }]
+                } 
+            }
         });
 
-    </script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    </script>
 
 </section>
