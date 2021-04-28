@@ -1,4 +1,7 @@
 <?php
+
+    // function setBulbColour()
+
     // Set the buttons to turn the smart devices on and off
     function setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices) {
         echo "<p class='header'>Turn on/off:</p>";
@@ -46,6 +49,11 @@
                     // Set a clickable checked button
                     $checkboxType = " checked onclick='smartBulbClick(this, this.id);";
                     setDeviceButton($deviceName, $checkboxType);
+                    // Set the colour of the bulb in relation to the carbon intensity
+                    $tpUsername = $_SESSION["userTpLinkUsr"];
+                    $tpPassword = $_SESSION["userTpLinkPwd"];
+                    $postfields = "{\"deviceId\":\"$deviceID\",\"username\":\"$tpUsername\",\"password\":\"$tpPassword\"}";
+                    postCurlRequestJSON('https://europe-west2-daring-atrium-311407.cloudfunctions.net/tp-bulb', $postfields);
                 } else if ($relayStateDecoded["msg"] == "Device is offline") {
                     echo "<p> Device is offline </p>";
                     // Set a button that is not clickable to indicate the device is offline
