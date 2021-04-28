@@ -1,5 +1,6 @@
 <?php
 
+// Error handling for an empty input on signup
 function emptyInputSignup($name, $email, $username, $pwd, $pwdRepeat, $tplinkuser, $tplinkpwd) {
     $result; 
     if (empty($name) || empty($email) || empty($username) || empty($pwd) || empty($pwdRepeat) || empty($tplinkuser) || empty($tplinkpwd)) {
@@ -10,6 +11,7 @@ function emptyInputSignup($name, $email, $username, $pwd, $pwdRepeat, $tplinkuse
     return $result;
 }
 
+// Error handling for an invalid username
 function invalidUid($username) {
     $result; 
     if (!preg_match("/^[a-zA-Z0-9]*$/", $username)) {
@@ -20,6 +22,7 @@ function invalidUid($username) {
     return $result;
 }
 
+// Checking for invalid email
 function invalidEmail($email) {
     $result; 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -30,6 +33,7 @@ function invalidEmail($email) {
     return $result;
 }
 
+// Validation of passwords entered matching
 function pwdMatch($pwd, $pwdRepeat) {
     $result; 
     if ($pwd !== $pwdRepeat) {
@@ -40,6 +44,7 @@ function pwdMatch($pwd, $pwdRepeat) {
     return $result;
 }
 
+// Check if username or email exists
 function uidExists($conn, $username, $email) {  
     $sql = "SELECT * FROM users WHERE usersUid = ? OR usersEmail = ?;";
     $stmt = mysqli_stmt_init($conn);
@@ -64,6 +69,7 @@ function uidExists($conn, $username, $email) {
     mysqli_stmt_close($stmt);
 }
 
+// Create a user if no errors
 function createUser($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkpwd) {
     $sql = "INSERT INTO users (usersName, usersEmail, usersUid, usersPwd, tpLinkUser, tpLinkPwd) VALUES (?, ?, ?, ?, ?, ?);";
     $stmt = mysqli_stmt_init($conn);
@@ -82,22 +88,7 @@ function createUser($conn, $name, $email, $username, $pwd, $tplinkuser, $tplinkp
     exit();
 }
 
-function createCO2($conn, $userId, $co2Used, $co2Saved) {
-    $sql = "INSERT INTO carbon_intensity_saved (usersId, co2Used, co2Saved) VALUES (?, ?, ?);";
-    $stmt = mysqli_stmt_init($conn);
-
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../login.php?error=wronglogin");
-        exit();
-    }
-
-    mysqli_stmt_bind_param($stmt, "sss", $userId, $co2Used, $co2Saved);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
-    // header("location: ../index.php");
-    // exit();
-}
-
+// If the user has not entered a username or password then throw error
 function emptyInputLogin($username, $pwd) {
     $result; 
     if (empty($username) || empty($pwd)) {
@@ -108,6 +99,7 @@ function emptyInputLogin($username, $pwd) {
     return $result;
 }
 
+// If the user exists then login
 function loginUser($conn, $username, $pwd) {
     $uidExists = uidExists($conn, $username, $username);
 
@@ -135,13 +127,28 @@ function loginUser($conn, $username, $pwd) {
     }
 }
 
+// Create a co2 input in the database
+function createCO2($conn, $userId, $co2Used, $co2Saved) {
+    $sql = "INSERT INTO carbon_intensity_saved (usersId, co2Used, co2Saved) VALUES (?, ?, ?);";
+    $stmt = mysqli_stmt_init($conn);
+
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        header("location: ../index.php?error=createco2");
+        exit();
+    }
+
+    mysqli_stmt_bind_param($stmt, "sss", $userId, $co2Used, $co2Saved);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
+}
+
+// Get co2 intensity saved in database for a given user
 function getIntensity($conn, $userId) {  
     $sql = "SELECT * FROM carbon_intensity_saved WHERE usersId = ?;";
     $stmt = mysqli_stmt_init($conn);
 
-    // SORT THIS ERROR MESSAGE
     if (!mysqli_stmt_prepare($stmt, $sql)) {
-        header("location: ../signup.php?error=stmtfailed");
+        header("location: ../saved.php?error=getco2");
         exit();
     }
 
@@ -149,21 +156,13 @@ function getIntensity($conn, $userId) {
     mysqli_stmt_execute($stmt);
 
     $resultData = mysqli_stmt_get_result($stmt);
-    
     $rows = array();
 
+    // For multiple rows of data, return all rows as an array
     while($row = mysqli_fetch_assoc($resultData)) {
         $rows[] = $row;
     }
     return $rows;
-
-
-    // if ($row = mysqli_fetch_assoc($resultData)) {
-    //     return $row;
-    // } else {
-    //     $result = false;
-    //     return $result;
-    // }
 
     mysqli_stmt_close($stmt);
 }

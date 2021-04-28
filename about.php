@@ -7,11 +7,12 @@
     <?php 
         if (isset($_SESSION["useruid"])) {
             $_LOGGED_IN = True; // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
-        } else {
+        } else { // If the user is not logged in then redirect them away from the page
             header('Location: index.php');
             exit();
         }
 
+        // IF the user is logged in then display information about the application
         if ($_LOGGED_IN == True) {
             echo "<div class='about'>
                     <p>This application manages and schedules  TP-Link smart devices, to help reduce an individual's local carbon impact.</p>
@@ -24,3 +25,7 @@
         }            
     ?>
 </section>
+
+<?php
+    include_once 'footer.php';
+?>

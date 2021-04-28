@@ -4,7 +4,7 @@ var schedulePlugs = function () {
     $.ajax({
         url: "http://localhost:8888/login-system/index.php?argument=schedule&act=device", // Pass the logout argument to index.php
         success: function(data) {
-            console.log("SCHEDULED 2");
+            console.log("Success");
         },
         error: function(xhr, status, error) {
             console.log(xhr.responseText);

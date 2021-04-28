@@ -15,6 +15,7 @@
         </div>
 
         <?php 
+        // Error handling for login
         if(isset($_GET["error"])) {
             if ($_GET["error"] == "emptyinput") {
                 echo "<script type='text/javascript'>alert('Fill in all fields');</script>";

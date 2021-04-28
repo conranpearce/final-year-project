@@ -5,4 +5,5 @@
 
     include('../index-functions/get-requests.php');
 
+    // Get carbon intensity for a given user
     return getIntensity($conn, $_SESSION["userid"]);

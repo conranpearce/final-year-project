@@ -2,8 +2,6 @@
     include_once 'header.php';
 ?>
 <section>
-    <!-- <script src="https://kit.fontawesome.com/f8e9bf29fb.js" crossorigin="anonymous"></script> -->
-
     <?php 
         if (isset($_SESSION["useruid"])) {
             $_LOGGED_IN = True; // Set $_LOGGED_IN to true so that information is only displayed if the user is logged in
@@ -12,43 +10,45 @@
             exit();
         }
 
+        // Get the intensity saved
         if ($_LOGGED_IN == True) {
             $intensity = require('includes/get-carbon-intensity-saved.inc.php');   
-        }            
+        }           
+        
+        // Error handling for co2 intensity saved
+        if(isset($_GET["error"])) {
+            if ($_GET["error"] == "getco2") {
+                echo "<script type='text/javascript'>alert('Error getting CO2 intensity from database');</script>";
+            }
+        } 
     ?>
 
+    <!-- Set chart in HTML -->
     <div class="chart wrapper">
-        <canvas id="myChart"></canvas>
+        <canvas id="co2Chart"></canvas>
 	</div>
 
+    <!-- Chart js include -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.js"></script>
     
     <script>
-
+        // Get the intensity value from php
         var intensity = <?php echo json_encode($intensity); ?>;
-
+        // Set arrays to store intensity 
         var intensityUsed = []
         var intensitySaved = []
         var intensityId = []
-
         for(var i=0; i<intensity.length; i++){
-            console.log(intensity[i]);
             intensityUsed.push(intensity[i]['co2Used']);
             intensitySaved.push(intensity[i]['co2Saved']);
             intensityId.push(intensity[i]['carbonIntensityId']);
         }
-
-        console.log("intensityUsed ", intensityUsed);
-        console.log("intensitySaved ", intensitySaved);
-        console.log("intensityId ", intensityId);
-
-
-        var ctx = document.getElementById('myChart').getContext('2d');
+        // Access the chart in HTML
+        var ctx = document.getElementById('co2Chart').getContext('2d');
         var chart = new Chart(ctx, {
-            // The type of chart we want to create
+            // Chart type
             type: 'line',
-            title: 'Title',
-            // The data for our dataset
+            // Data for graph
             data: {
                 labels: intensityId,
                 datasets: [{
@@ -64,15 +64,8 @@
                     data: intensitySaved,
                 }]
             },
-            // Configuration options go here
+            // Configuration option
             options: {
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            display: false
-                        }
-                    }]
-                },
                 elements: {
                     line: {
                     tension: 0
@@ -83,12 +76,24 @@
                 },
                 scales: {
                     yAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: 'gCO2/kWh'
-                    }
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'gCO2/kWh',
+                            fontSize: 14
+                        }
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            display: false // Remove x axis label
+                        },
                     }]
-                } 
+                },
+                title: {
+                    display: true,
+                    text: 'Comparison of CO2 intensity used when scheduling against CO2 intensity at time of scheduling.',
+                    fontSize: 15,
+                    fontColor: '#111111'
+                }
             }
         });
 
@@ -96,3 +101,7 @@
     </script>
 
 </section>
+
+<?php
+    include_once 'footer.php';
+?>

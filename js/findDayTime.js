@@ -21,7 +21,6 @@ function findTime(schedule) {
 
 // Return the day scheduled
 function findDay(schedule) {
-    console.log('find day ', schedule);
     if (schedule.includes('"wday":[1,0,0,0,0,0,0]')) { 
         return "Sunday";
     } else if (schedule.includes('"wday":[0,1,0,0,0,0,0]')) { 

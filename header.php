@@ -15,6 +15,7 @@
 
 <body>
 
+<!-- Header to be displayed, including navigation bar -->
 <div class="nav wrapper" id="navigation-bar">
     <?php 
         if (isset($_SESSION["useruid"])) {
@@ -33,6 +34,7 @@
 </div>
 
 <script>
+    // Interaction with the navigation bar
     function menuInteraction() {
         var x = document.getElementById("navigation-bar");
         if (x.className === "nav wrapper") {
