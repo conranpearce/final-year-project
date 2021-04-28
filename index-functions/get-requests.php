@@ -88,7 +88,6 @@
         echo "<h2 class='header'> Best forecasted time in 24hrs</h2>";
         echo "<h2>". $bestTime[0] . " at " . $bestDate[0] . "</h2>";
         echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/kWh</h2>";
-        // return $bestCarbonIntensityTime['from'];
         return $bestCarbonIntensityTime;
     }
 ?>
