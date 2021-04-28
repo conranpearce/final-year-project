@@ -13,7 +13,7 @@
         $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/");
         $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
 
-        echo "<h2 class='header'>" . "Current carbon intensity</h2>";
+        echo "<p class='header'>" . "Current carbon intensity</p>";
 
         if ($carbonIntensityDecoded['data'][0]['intensity']['index'] == 'very low') {
             echo "<div class='intensity very-low'>";
@@ -31,7 +31,7 @@
         $carbonForecast = $carbonIntensityDecoded['data'][0]['intensity']['forecast'];
 
         echo "<p class='gco2'>" . $carbonIndex . "</p>";
-        echo "<p class='gco2'>" . $carbonForecast . " gCO2/KwH</p>";
+        echo "<p class='gco2'>" . $carbonForecast . " gCO2/kWh</p>";
         echo "</div>";
 
         return $carbonForecast;
@@ -88,7 +88,7 @@
         # Output to the user the lowest time and forecast
         echo "<h2 class='header'> Best forecasted time in 24hrs</h2>";
         echo "<h2>". $bestTime[0] . " at " . $bestDate[0] . "</h2>";
-        echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/KwH</h2>";
+        echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/kWh</h2>";
         // return $bestCarbonIntensityTime['from'];
         return $bestCarbonIntensityTime;
     }

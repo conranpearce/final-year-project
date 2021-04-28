@@ -85,10 +85,10 @@
             }
         ?>
 
-        <!-- Testing calling javascript -->
-        <script>
+        <script type="text/javascript" src="js/findDayTime.js"></script>
 
-            
+        <!-- Testing calling javascript -->
+        <script>            
             // When the page loads, check for inactivity
             window.onload = function() {
                 // Check if a user is logged in
@@ -137,26 +137,6 @@
             async function callTplinkAPIScheduled(deviceObject) {
                 var raw = `{\n \"method\": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObject['userToken']}\",\n \"deviceId\": \"${deviceObject['userDeviceId']}\",\n \"requestData\": \"{\\\"schedule\\\":{\\\"get_rules\\\":null}}"\n}\n}`;
                 return tpLinkRequest(raw);
-            }
-
-            // Return the day scheduled
-            function findDay(schedule) {
-                console.log('find day ', schedule);
-                if (schedule.includes('"wday":[1,0,0,0,0,0,0]')) { 
-                    return "Sunday";
-                } else if (schedule.includes('"wday":[0,1,0,0,0,0,0]')) { 
-                    return "Monday";
-                } else if (schedule.includes('"wday":[0,0,1,0,0,0,0]')) { 
-                    return "Tuesday";
-                } else if (schedule.includes('"wday":[0,0,0,1,0,0,0]')) { 
-                    return "Wednesday";
-                } else if (schedule.includes('"wday":[0,0,0,0,1,0,0]')) { 
-                    return "Thursday";
-                } else if (schedule.includes('"wday":[0,0,0,0,0,1,0]')) { 
-                    return "Friday";
-                } else if (schedule.includes('"wday":[0,0,0,0,0,0,1]')) { 
-                    return "Saturday";
-                } 
             }
             
             async function smartPlugClick(cb, id) {
@@ -264,7 +244,7 @@
                                 tpLinkNewSchedule = await callTplinkAPIScheduled(deviceObj[i]);   
                                 console.log("tpLinkNewSchedule ", tpLinkNewSchedule );
                                 updatedSchedule = tpLinkNewSchedule["result"]["responseData"];
-                                document.getElementById(deviceId).innerHTML = "Scheduled for " + findDay(updatedSchedule);
+                                document.getElementById(deviceId).innerHTML = "Scheduled for " + findTime(updatedSchedule) + " " + findDay(updatedSchedule);
 
                                 schedulePlugs();
                             }  catch (e) {
@@ -282,12 +262,13 @@
                     }
                 }
             }
-
         </script>
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script type="text/javascript" src="js/inactivity.js"></script>
         <script type="text/javascript" src="js/update.js"></script>
         <script type="text/javascript" src="js/schedule.js"></script>
+
     </section>
 
 <?php

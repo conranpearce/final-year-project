@@ -68,7 +68,7 @@
                     $checkboxType = " onclick='smartPlugScheduleClick(this, this.id);";
                     setDeviceButton($deviceName, $checkboxType);
                 } else { // Device is scheduled
-                    echo "<p id='". $idname ."'> Scheduled  at " .  findTimeScheduled($relayStateResponse) . " " . findDayScheduled($relayStateResponse) . "</p>";
+                    echo "<p id='". $idname ."'> Scheduled  for " .  findTimeScheduled($relayStateResponse) . " " . findDayScheduled($relayStateResponse) . "</p>";
                     array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
                     $checkboxType = " checked onclick='smartPlugScheduleClick(this, this.id);"; // Set a clickable checked button
                     setDeviceButton($deviceName, $checkboxType);
