@@ -20,6 +20,7 @@
         </div>
 
         <?php 
+        // Error catching for signup
         if(isset($_GET["error"])) {
             if ($_GET["error"] == "emptyinput") {
                 echo "<script type='text/javascript'>alert('Fill in all fields');</script>";

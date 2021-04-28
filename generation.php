@@ -17,8 +17,13 @@
             exit();
         }
 
+        // Display the current generation mix to the user if they are logged in
         if ($_LOGGED_IN == True) {
             getCurrentGenerationMix();
         }            
     ?>
 </section>
+
+<?php
+    include_once 'footer.php';
+?>

@@ -2,6 +2,7 @@
     // Getting UUID to be used for getting the TP-Link token
     function getUUID() {
         $uuid = getCurlRequest("https://www.uuidtools.com/api/generate/v1/");
+        // Remove from string
         $uuid = trim($uuid, '[');
         $uuid = trim($uuid, ']');
         $uuid = trim($uuid, '"');
@@ -12,9 +13,9 @@
     function getCurrentCarbonIntensity() {
         $carbonIntensityResponse = getCurlRequest("https://api.carbonintensity.org.uk/intensity/");
         $carbonIntensityDecoded = json_decode($carbonIntensityResponse, true);
-
-        echo "<h2 class='header'>" . "Current carbon intensity</h2>";
-
+        // Display current carbon intensity
+        echo "<p class='header'>" . "Current carbon intensity</p>";
+        // Find the index of the current carbon intensity and set the colour representing this
         if ($carbonIntensityDecoded['data'][0]['intensity']['index'] == 'very low') {
             echo "<div class='intensity very-low'>";
         } else if ($carbonIntensityDecoded['data'][0]['intensity']['index'] == 'low') {
@@ -25,10 +26,13 @@
             echo "<div class='intensity high'>";
         } else if ($carbonIntensityDecoded['data'][0]['intensity']['index'] == 'very high') {
             echo "<div class='intensity very-high'>";
-        } 
-        echo "<p class='gco2'>" . $carbonIntensityDecoded['data'][0]['intensity']['index'] . "</p>";
-        echo "<p class='gco2'>" . $carbonIntensityDecoded['data'][0]['intensity']['forecast'] . " gCO2/KwH</p>";
+        }
+        $carbonIndex = $carbonIntensityDecoded['data'][0]['intensity']['index'];
+        $carbonForecast = $carbonIntensityDecoded['data'][0]['intensity']['forecast'];
+        echo "<p class='gco2'>" . $carbonIndex . "</p>";
+        echo "<p class='gco2'>" . $carbonForecast . " gCO2/kWh</p>";
         echo "</div>";
+        return $carbonForecast;
     }
 
     // Get the current generation mix from the National Grid API
@@ -41,6 +45,7 @@
         for ($x = 0; $x < sizeof($generationMixDecoded['data']['generationmix']); $x++) {
             array_push($generationPerc, $generationMixDecoded['data']['generationmix'][$x]['perc']);
         }
+        // Reverse sort these percentages, display generation mix in descending order
         rsort($generationPerc);
         $generationMix = array();
         for ($x = 0; $x < sizeof($generationPerc); $x++) {
@@ -75,14 +80,14 @@
             }
         }
 
-        // split best carbon time
+        // Split best carbon time
         $bestDate = explode('T', $bestCarbonIntensityTime['from']);
         $bestTime = explode('Z', $bestDate[1]);
         
         # Output to the user the lowest time and forecast
         echo "<h2 class='header'> Best forecasted time in 24hrs</h2>";
         echo "<h2>". $bestTime[0] . " at " . $bestDate[0] . "</h2>";
-        echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/KwH</h2>";
-        return $bestCarbonIntensityTime['from'];
+        echo "<h2>" . $bestCarbonIntensityTime['intensity']['forecast'] . " gCO2/kWh</h2>";
+        return $bestCarbonIntensityTime;
     }
 ?>

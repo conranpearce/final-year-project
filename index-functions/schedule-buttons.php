@@ -1,4 +1,5 @@
 <?php
+    // Time conversion into hh:mm format
     function timeConversion($time, $format = '%02d:%02d') {
         if ($time < 1) {
             return;
@@ -8,12 +9,14 @@
         return sprintf($format, $hours, $minutes);
     }
 
+    // Split time scheduled string
     function findTimeScheduled($relayStateResponse) {
         $time = explode('smin\":', $relayStateResponse);
         $time = explode(',', $time[1]);
         return timeConversion($time[0]);
     }
 
+    // Find day scheduled from response
     function findDayScheduled($relayStateResponse) {
         if (stripos($relayStateResponse, 'wday\":[1,0,0,0,0,0,0]') !== false) {
             return "Sunday";
@@ -44,7 +47,6 @@
             // Set id for buttons, based on the device name
             $idname = strtolower(str_replace(' ', '', $deviceName));
             $idname = $idname . '-button';
-
             // Find if the devices are already scheduled
             $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"system\\\":{\\\"get_sysinfo\\\":null},\\\"emeter\\\":{\\\"get_realtime\\\":null}}\"\n\n }\n}";
             $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
@@ -53,7 +55,6 @@
             // If a smart plug then add a button
             if (stripos(json_encode($deviceListDecoded['result']['deviceList'][$x]['deviceType']), 'IOT.SMARTPLUGSWITCH') !== false) {    
                 echo "<div class='grid-item'>";
-
                 echo "<p>" . $deviceListDecoded['result']['deviceList'][$x]['alias'] . "</p>";  
                 $fieldPost = "{\n \"method\": \"passthrough\",\n \"params\": {\n \"deviceId\": \"$deviceID\",\n  \"token\": \"$token\",\n\"requestData\": \"{\\\"schedule\\\":{\\\"get_rules\\\":null}}\"\n\n }\n}";
                 $relayStateResponse = postCurlRequest("https://wap.tplinkcloud.com", $fieldPost);
@@ -68,7 +69,7 @@
                     $checkboxType = " onclick='smartPlugScheduleClick(this, this.id);";
                     setDeviceButton($deviceName, $checkboxType);
                 } else { // Device is scheduled
-                    echo "<p id='". $idname ."'> Scheduled  at " .  findTimeScheduled($relayStateResponse) . " " . findDayScheduled($relayStateResponse) . "</p>";
+                    echo "<p id='". $idname ."'> Scheduled  for " .  findTimeScheduled($relayStateResponse) . " " . findDayScheduled($relayStateResponse) . "</p>";
                     array_push($devices, ['userToken' => $token, 'userDeviceId' => $deviceID, 'userDeviceAlias' => $deviceName, 'userDeviceState' => 1]);
                     $checkboxType = " checked onclick='smartPlugScheduleClick(this, this.id);"; // Set a clickable checked button
                     setDeviceButton($deviceName, $checkboxType);
