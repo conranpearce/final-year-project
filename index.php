@@ -155,10 +155,18 @@
                         // Change the sate of the smart bulb
                         if (deviceReturnResponse.includes('on_off\":0')) {
                             var raw = `{\n \"method": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"brightness\\\":100,\\\"color_temp\\\":3500,\\\"ignore_default\\\":0,\\\"mode\\\":\\\"normal\\\",\\\"on_off\\\":1,\\\"transition_period\\\":1000}}}\"\n }\n}`;
+                            // Turn bulb on
+                            postTpLinkRequest(raw);
+                            // Set TP-Link credentials and device ID to pass to Google cloud function
+                            tpUsername = '<?= $_SESSION["userTpLinkUsr"]; ?>';
+                            tpPassword = '<?= $_SESSION["userTpLinkPwd"]; ?>';
+                            raw = JSON.stringify({"deviceId":`${deviceObj[i]['userDeviceId']}`,"username":`${tpUsername}`,"password":`${tpPassword}`});
+                            // Set Google cloud function endpoint and raw data
+                            postTpLinkRequestJSON("https://europe-west2-daring-atrium-311407.cloudfunctions.net/tp-bulb", raw);
                         } else if (deviceReturnResponse.includes('on_off\":1')) {
                             var raw = `{\n \"method": \"passthrough\",\n \"params\": {\n \"token\": \"${deviceObj[i]['userToken']}\",\n \"deviceId\": \"${deviceObj[i]['userDeviceId']}\",\n \"requestData\": \"{\\\"smartlife.iot.smartbulb.lightingservice\\\":{\\\"transition_light_state\\\":{\\\"brightness\\\":100,\\\"color_temp\\\":3500,\\\"ignore_default\\\":0,\\\"mode\\\":\\\"normal\\\",\\\"on_off\\\":0,\\\"transition_period\\\":1000}}}\"\n }\n}`;
+                            postTpLinkRequest(raw);
                         }
-                        postTpLinkRequest(raw);
                     }
                 }
             }
