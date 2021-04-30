@@ -10,12 +10,6 @@ MAMP is the packaged used for local development, using PHP, MySQL, JavaScript, H
 
 Cloud service files can be found [here](https://github.com/conranpearce/digital-systems-project-cloud).
 
-## Demo ##
-
-* [Application demo](https://drive.google.com/file/d/1yjPFV2dF341Ojv1Ch1alqOWi5_xS5C1R/view?usp=sharing)
-* [Smart plug demo](https://drive.google.com/file/d/13UhojMrFfwPlUEe-wSslqOv5mgUDwKR1/view?usp=sharing)
-* [Smart bulb demo](https://drive.google.com/file/d/1XuNURAbGDmWZbUF1CMW5b1iwBpjdRt74/view?usp=sharing)
-
 ## Requirements ##
 
 * [MAMP](https://www.mamp.info/en/windows/)
@@ -26,7 +20,7 @@ Cloud service files can be found [here](https://github.com/conranpearce/digital-
 * Clone this repo.
 * Move the project to the relevant folder for development. For Mac it's in MAMP/htdocs.
 * Open up phpMyAdmin
-* Execute the SQL query `CREATE DATABASE digitalsystemsproject;` to create the database:
+* Execute the SQL query `CREATE DATABASE 'digitalsystemsproject';` to create the database:
 * Move to the database `digitalsystemsproject` in phpMyAdmin
 * Execute the SQL query below, in the `digitalsystemsproject` database, to create the tables:
 
