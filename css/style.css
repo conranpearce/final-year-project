@@ -1,21 +1,30 @@
+* {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 body {
-    background-color: #fff;
+    background-color: rgb(240, 240, 240);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .wrapper {
-    width: 900px;
+    width: 70%;
     margin: 0 auto;
 }
 
-h1, h2, h3, h4, h5, h6, p {
-    font-family: 'Roboto', sans-serif;
+h1, h2, h3, h4, h5, h6, .button, .textInput {
     color: #111111;
     line-height: 24px;
 }
 
+p {
+    color: #111111;
+    font-size: 18px;
+}
+
 h1 {
     font-weight: 600;
-    font-size: 32px;
+    font-size: 22px;
     padding: 20px 0;
     text-align: center;
 }
@@ -23,41 +32,9 @@ h1 {
 
 h2 {
     font-weight: 400;
-    font-size: 28px;
-    padding: 20px 0;
+    font-size: 16px;
+    padding: 0 0;
     text-align: center;
-    text-transform: capitalize;
-}
-
-
-nav{
-    margin: 20px 0;
-    padding: 0;
-    
-}
-
-nav li{
-    display: inline-block;
-    list-style-type: none;
-    font-size: 1em;
-    margin: 0 10px;
-    color: #42509e;
-    position: relative;
-    cursor: pointer;
-}
-
-nav li::after{
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 20px;
-    border-bottom: 1px solid #42509e;
-    transition: all ease-in 0.25s;
-}  
-
-nav li:hover:after{
-    width: 100%;
 }
 
 input[type="text"], input[type="password"], input[type="submit"], textarea{
@@ -68,6 +45,287 @@ input[type="text"]:focus, input[type="password"]:focus, input[type="submit"]:foc
     outline: none;
 }
 
-nav a {
+/* Buttons */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 3px;
+}
+  
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+  
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:hover{
+    background-color: rgb(189, 189, 189);
+} 
+  
+input:checked + .slider {
+    background-color: #2196F3;
+}
+  
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+  
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+  
+.slider.round:before {
+    border-radius: 50%;
+}
+  
+.button, .textInput {
+    background-color: #3869b8;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    padding: 24px 72px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: block;
+    margin: 10px auto;
+}
+
+.button:hover {
+    background-color: #597db6;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.textInput::placeholder {
+    color: white;
+    opacity: 50%;
+}
+
+.container { 
+    margin-top: 300px;
+    height: 100px;
+    position: relative;
+}
+
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.lower {
+    margin-top: 150px;
+}
+
+.header {
+    font-weight: bold;
+    text-align: center;
+}
+
+.about {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.link {
+    text-decoration: none;
+    font-weight: bold;
     color: #111111;
+}
+
+.gco2 {
+    text-align: center;
+    font-size: 18px;
+}
+
+.fuel {
+    text-transform: capitalize;
+}
+
+.grid-container {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+    left: 50%;
+    -ms-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    margin: 0;
+    position: relative;
+}
+  
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 6px;
+    font-size: 18px;
+    text-align: center;
+    margin: 6px;
+}
+
+/* Setting carbon colour for the user */
+.intensity {
+    background-color: #e46731;
+    border-radius: 10px;
+    padding: 6px;
+    font-size: 18px;
+    text-align: center;
+    margin: 6px;
+    width: 30%;
+    -ms-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    position: relative;
+    left: 50%;
+
+}
+
+.very-low  {
+    background-color: #258349;
+}
+.low {
+    background-color: #9cd9b6;
+}
+
+.moderate {
+    background-color: #f0c330; 
+}
+
+.high {
+    background-color: #e46731;
+}
+
+.very-high {
+    background-color: #a7332b;
+}
+
+.hamburger-icon {
+    width: 25px;
+    height: 4px;
+    background-color: black;
+    margin: 4px 0;
+}
+
+.nav {
+    overflow: hidden;
+}
+  
+.nav a {
+    float: left;
+    display: block;
+    color: #111111;
+    text-align: center;
+    padding: 12px 14px;
+    text-decoration: none;
+    font-size: 18px;
+}
+  
+.nav a:hover {
+    background-color: #ddd;
+}
+  
+.nav .menu-icon {
+    display: none;
+}
+  
+@media screen and (min-width: 200px) {
+    .nav a:not(:first-child) {
+        display: none;
+    }
+
+    .nav a.menu-icon {
+        float: right;
+        display: block;
+    }
+}
+  
+@media screen and (min-width: 200px) {
+    .nav.responsive {
+        position: relative;
+    }
+
+    .nav.responsive .menu-icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .nav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .wrapper {
+        width: 90%;
+    }
+    .grid-container {
+        display:block;
+    }
+  
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+    .wrapper {
+        width: 70%;
+    }
+}
+  
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .wrapper {
+        width: 70%;
+    }
+
+    .grid-container {
+        display: inline-grid;
+    }
+} 
+  
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .wrapper {
+        width: 70%;
+    }
+} 
+  
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+    .wrapper {
+        width: 70%;
+    }
 }

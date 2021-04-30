@@ -9,33 +9,41 @@
     <meta charset="utf-8">
     <meta name="description" content="Log in system">
     <meta name=viewport content="width=device-width, initial-scale=1">
-    <title>Log in system</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital@1&display=swap" rel="stylesheet">
-
+    <title>Carbon Intensity</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/reset.css">
-
 </head>
 
 <body>
 
-<nav>
-    <div class="wrapper">
-        <a href="index.php"></a>
+<!-- Header to be displayed, including navigation bar -->
+<div class="nav wrapper" id="navigation-bar">
+    <?php 
+        if (isset($_SESSION["useruid"])) {
+            echo "<a href='index.php'>Home</a>";
+            echo "<a href='about.php'>About</a>";
+            echo "<a href='saved.php'>CO2 Saved</a>";
+            echo "<a href='generation.php'>Generation Mix</a>";
+            echo "<a href='includes/logout.inc.php'>Log out</a>";
+            echo "<a href='javascript:void(0);' class='menu-icon' onclick='menuInteraction()'>
+                    <div class='hamburger-icon'></div>
+                    <div class='hamburger-icon'></div>
+                    <div class='hamburger-icon'></div>
+                </a>";
+        }
+    ?>
+</div>
 
-        <ul>
-            <li><a href="index.php">Home</a></li>
-            <?php 
-                if (isset($_SESSION["useruid"])) {
-                    echo "<li><a href='profile.php'>Profile page</a></li>";
-                    echo "<li><a href='includes/logout.inc.php'>Log out</a></li>";
-                } else {
-                    echo "<li><a href='signup.php'>Sign up</a></li>";
-                    echo "<li><a href='login.php'>Log in</a></li>";
-                }
-            ?>
-        </ul>
-    </div>
-</nav>
+<script>
+    // Interaction with the navigation bar
+    function menuInteraction() {
+        var x = document.getElementById("navigation-bar");
+        if (x.className === "nav wrapper") {
+            x.className += " responsive wrapper";
+        } else {
+            x.className = "nav wrapper";
+        }
+    }
+
+</script>
 
 <div class="wrapper">
