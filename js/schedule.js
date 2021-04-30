@@ -2,7 +2,7 @@
 var schedulePlugs = function () {
     
     $.ajax({
-        url: "http://localhost:8888/login-system/index.php?argument=schedule&act=device", // Pass the logout argument to index.php
+        url: "http://localhost:8888/digital-systems-project/index.php?argument=schedule&act=device", // Pass the logout argument to index.php
         success: function(data) {
             console.log("Success");
         },
