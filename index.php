@@ -1,7 +1,7 @@
 <?php
     include_once 'header.php';
 ?>
-    <section class="index-intro">
+    <section>
         <?php 
             // Include files
             include('index-functions/curl-templates.php');
