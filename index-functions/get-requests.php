@@ -41,7 +41,7 @@
         $generationMixDecoded = json_decode($generationMixResponse, true);
         # Display all of the generation sources in descending order of percentage
         $generationPerc = array();
-        echo "<h2 class='header'>" . "Current generation mix of energy is:" . "</h2>";
+        echo "<p class='header'>" . "Current generation mix of energy:" . "</p>";
         for ($x = 0; $x < sizeof($generationMixDecoded['data']['generationmix']); $x++) {
             array_push($generationPerc, $generationMixDecoded['data']['generationmix'][$x]['perc']);
         }
@@ -54,7 +54,7 @@
                     array_push($generationMix, ['fuel' => $generationMixDecoded['data']['generationmix'][$y]['fuel'], 'perc' => $generationMixDecoded['data']['generationmix'][$y]['perc']]);
                 }
             }
-            echo "<h2> " . $generationMix[$x]['fuel'] . " " . $generationMix[$x]['perc'] . "% </h2>";
+            echo "<h2 class='fuel'> " . $generationMix[$x]['fuel'] . " " . $generationMix[$x]['perc'] . "% </h2>";
         }
     }
 

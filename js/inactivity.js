@@ -13,7 +13,7 @@ var inactivity = function () {
     // Log the user out if there are no DOM events, using AJAX
     function logout() {
         $.ajax({
-            url: "http://localhost:8888/login-system/index.php?argument=logout", // Pass the logout argument to index.php
+            url: "http://localhost:8888/digital-systems-project/index.php?argument=logout", // Pass the logout argument to index.php
             success: function(data) {
                 window.location.href = "login.php"; // Redirect the user to the login page if there is inactivity
             },
