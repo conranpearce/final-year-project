@@ -29,7 +29,10 @@
                     <div class='hamburger-icon'></div>
                     <div class='hamburger-icon'></div>
                 </a>";
+        } else if (($_SERVER['REQUEST_URI'] == '/digital-systems-project/login.php') || ($_SERVER['REQUEST_URI'] == '/digital-systems-project/signup.php')) {
+            echo "<a href='index.php'>Home</a>";
         }
+            
     ?>
 </div>
 
