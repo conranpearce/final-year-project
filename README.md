@@ -20,7 +20,7 @@ Cloud service files can be found [here](https://github.com/conranpearce/digital-
 * Clone this repo.
 * Move the project to the relevant folder for development. For Mac it's in MAMP/htdocs.
 * Open up phpMyAdmin
-* Execute the SQL query `CREATE DATABASE 'digitalsystemsproject';` to create the database:
+* Execute the SQL query `CREATE DATABASE digitalsystemsproject;` to create the database:
 * Move to the database `digitalsystemsproject` in phpMyAdmin
 * Execute the SQL query below, in the `digitalsystemsproject` database, to create the tables:
 
