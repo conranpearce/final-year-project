@@ -10,6 +10,8 @@ MAMP is the packaged used for local development, using PHP, MySQL, JavaScript, H
 
 Cloud service files can be found [here](https://github.com/conranpearce/digital-systems-project-cloud).
 
+[GitHub Kanban board](https://github.com/conranpearce/digital-systems-project) to manage the project.
+
 ## Demo ##
 
 * [Application demo](https://drive.google.com/file/d/1yjPFV2dF341Ojv1Ch1alqOWi5_xS5C1R/view?usp=sharing)
