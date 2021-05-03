@@ -41,7 +41,8 @@
         for(var i=0; i<intensity.length; i++){
             intensityUsed.push(intensity[i]['co2Used']);
             intensitySaved.push(intensity[i]['co2Saved']);
-            intensityId.push(intensity[i]['carbonIntensityId']);
+            // intensityId.push(intensity[i]['carbonIntensityId']);
+            intensityId.push(i+1);
         }
         // Access the chart in HTML
         var ctx = document.getElementById('co2Chart').getContext('2d');
@@ -83,9 +84,11 @@
                         }
                     }],
                     xAxes: [{
-                        ticks: {
-                            display: false // Remove x axis label
-                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Scheduling iteration',
+                            fontSize: 14
+                        }
                     }]
                 },
                 title: {
