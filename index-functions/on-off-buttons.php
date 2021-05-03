@@ -1,7 +1,4 @@
 <?php
-
-    // function setBulbColour()
-
     // Set the buttons to turn the smart devices on and off
     function setOnOffButtons($token, $deviceListDecoded, $deviceCount, $devices) {
         echo "<p class='header'>Turn on/off:</p>";
