@@ -18,6 +18,11 @@ Cloud service files can be found [here](https://github.com/conranpearce/digital-
 * [Smart plug demo](https://drive.google.com/file/d/13UhojMrFfwPlUEe-wSslqOv5mgUDwKR1/view?usp=sharing)
 * [Smart bulb demo](https://drive.google.com/file/d/1XuNURAbGDmWZbUF1CMW5b1iwBpjdRt74/view?usp=sharing)
 
+
+<p align="center">
+  <img src="img/home-page.png"/>
+</p>
+
 ## Requirements ##
 
 * [MAMP](https://www.mamp.info/en/windows/)
